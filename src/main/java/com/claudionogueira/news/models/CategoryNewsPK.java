@@ -23,7 +23,6 @@ public class CategoryNewsPK implements Serializable {
 	}
 
 	public CategoryNewsPK(Category category, News news) {
-		super();
 		this.category = category;
 		this.news = news;
 	}
