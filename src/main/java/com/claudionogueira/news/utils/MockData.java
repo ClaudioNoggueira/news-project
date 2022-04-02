@@ -9,8 +9,11 @@ import org.springframework.stereotype.Component;
 
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
+import com.claudionogueira.news.models.CategoryNews;
+import com.claudionogueira.news.models.CategoryNewsPK;
 import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
+import com.claudionogueira.news.repositories.CategoryNewsRepo;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 
@@ -23,10 +26,14 @@ public class MockData implements CommandLineRunner {
 
 	private final NewsRepo newsRepo;
 
-	public MockData(AuthorRepo authorRepo, CategoryRepo categoryRepo, NewsRepo newsRepo) {
+	private final CategoryNewsRepo categoryNewsRepo;
+
+	public MockData(AuthorRepo authorRepo, CategoryRepo categoryRepo, NewsRepo newsRepo,
+			CategoryNewsRepo categoryNewsRepo) {
 		this.authorRepo = authorRepo;
 		this.categoryRepo = categoryRepo;
 		this.newsRepo = newsRepo;
+		this.categoryNewsRepo = categoryNewsRepo;
 	}
 
 	@Override
@@ -39,6 +46,9 @@ public class MockData implements CommandLineRunner {
 
 		// Save news
 		List<News> newsList = saveNews(authors);
+		
+		// Save category news
+		saveCategoryNews(categories, newsList);
 	}
 
 	private List<Author> saveAuthors() {
@@ -111,4 +121,21 @@ public class MockData implements CommandLineRunner {
 		return newsList;
 	}
 
+	private void saveCategoryNews(List<Category> categories, List<News> newsList) {
+		List<CategoryNews> list = new ArrayList<>();
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(0), newsList.get(0))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(1), newsList.get(1))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(0), newsList.get(2))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(2), newsList.get(3))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(1), newsList.get(4))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(2), newsList.get(5))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(3), newsList.get(6))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(3), newsList.get(7))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(1), newsList.get(8))));
+		list.add(new CategoryNews(new CategoryNewsPK(categories.get(4), newsList.get(9))));
+
+		for (CategoryNews obj : list) {
+			categoryNewsRepo.save(obj);
+		}
+	}
 }
