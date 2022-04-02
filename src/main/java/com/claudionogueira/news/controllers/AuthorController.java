@@ -1,8 +1,12 @@
 package com.claudionogueira.news.controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.services.AuthorService;
 
 @RestController
@@ -13,5 +17,10 @@ public class AuthorController {
 
 	public AuthorController(AuthorService service) {
 		this.service = service;
+	}
+	
+	@GetMapping
+	public Page<Author> findAll(Pageable pageable){
+		return service.findAll(pageable);
 	}
 }
