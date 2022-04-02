@@ -8,4 +8,6 @@ import com.claudionogueira.news.models.Author;
 public interface IAuthorService {
 	
 	Page<Author> findAll(Pageable pageable);
+	
+	Author findById(Long id);
 }
