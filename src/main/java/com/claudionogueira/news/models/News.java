@@ -3,7 +3,6 @@ package com.claudionogueira.news.models;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,7 +31,7 @@ public class News implements Serializable {
 	@Column(name = "content")
 	private String content;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "author_id")
 	private Author author;
 
