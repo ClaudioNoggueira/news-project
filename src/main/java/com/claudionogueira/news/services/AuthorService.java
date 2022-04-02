@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
@@ -27,7 +28,7 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public Author findById(Long id) {
 		Optional<Author> obj = repo.findById(id);
-		return obj.orElseThrow(() -> new IllegalArgumentException("No author with ID: '" + id + "' found."));
+		return obj.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + id + "' not found."));
 	}
 
 }
