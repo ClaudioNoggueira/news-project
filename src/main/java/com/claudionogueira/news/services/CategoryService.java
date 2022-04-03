@@ -35,4 +35,9 @@ public class CategoryService implements ICategoryService {
 		Optional<Category> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + id + "' not found."));
 	}
+
+	@Override
+	public void add(Category entity) {
+		repo.save(entity);
+	}
 }

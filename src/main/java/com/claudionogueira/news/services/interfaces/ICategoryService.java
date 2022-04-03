@@ -12,4 +12,6 @@ public interface ICategoryService {
 	Page<Category> findByName(String name, Pageable pageable);
 	
 	Category findById(Long id);
+	
+	void add(Category entity);
 }
