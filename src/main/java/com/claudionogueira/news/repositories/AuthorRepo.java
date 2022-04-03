@@ -11,6 +11,8 @@ import com.claudionogueira.news.models.Author;
 @Repository
 public interface AuthorRepo extends JpaRepository<Author, Long> {
 
-	@Query(value = "SELECT * FROM TB_AUTHOR WHERE email LIKE %?1%", countQuery = "SELECT count(*) FROM TB_AUTHOR", nativeQuery = true)
+	@Query(value = "SELECT DISTINCT * FROM TB_AUTHOR WHERE email LIKE %?1%", countQuery = "SELECT count(*) FROM TB_AUTHOR", nativeQuery = true)
 	Page<Author> findByEmailPaginated(String email, Pageable pageable);
+
+	Page<Author> findByFirstNameContainingIgnoreCase(String firstName, Pageable pageable);
 }

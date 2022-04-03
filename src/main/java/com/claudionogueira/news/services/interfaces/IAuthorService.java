@@ -12,4 +12,6 @@ public interface IAuthorService {
 	Author findById(Long id);
 	
 	Page<Author> findByEmailPaginated(String email, Pageable pageable);
+	
+	Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable);
 }

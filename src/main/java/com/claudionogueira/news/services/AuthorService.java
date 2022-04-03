@@ -36,4 +36,9 @@ public class AuthorService implements IAuthorService {
 		return repo.findByEmailPaginated(email, pageable);
 	}
 
+	@Override
+	public Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable) {
+		return repo.findByFirstNameContainingIgnoreCase(firstName, pageable);
+	}
+
 }
