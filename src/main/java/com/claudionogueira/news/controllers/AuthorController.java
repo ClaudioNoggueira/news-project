@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.models.Author;
@@ -20,15 +21,27 @@ public class AuthorController {
 	public AuthorController(AuthorService service) {
 		this.service = service;
 	}
-	
+
 	@GetMapping
-	public Page<Author> findAll(Pageable pageable){
+	public Page<Author> findAll(Pageable pageable) {
 		return service.findAll(pageable);
 	}
-	
+
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Author> findById(@PathVariable Long id){
+	public ResponseEntity<Author> findById(@PathVariable Long id) {
 		Author body = service.findById(id);
 		return ResponseEntity.ok(body);
+	}
+
+	@GetMapping(value = "/search")
+	public Page<Author> search(@RequestParam(value = "email", defaultValue = "") String email, Pageable pageable) {
+		if(!email.equals("")) {
+			Page<Author> page = service.findByEmailPaginated(email, pageable);
+			if(!page.isEmpty()) {
+				return page;
+			}
+		}
+				
+		return service.findAll(pageable);
 	}
 }

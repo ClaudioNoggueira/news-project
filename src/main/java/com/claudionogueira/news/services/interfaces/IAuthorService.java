@@ -10,4 +10,6 @@ public interface IAuthorService {
 	Page<Author> findAll(Pageable pageable);
 	
 	Author findById(Long id);
+	
+	Page<Author> findByEmailPaginated(String email, Pageable pageable);
 }

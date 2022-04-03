@@ -31,4 +31,9 @@ public class AuthorService implements IAuthorService {
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + id + "' not found."));
 	}
 
+	@Override
+	public Page<Author> findByEmailPaginated(String email, Pageable pageable) {
+		return repo.findByEmailPaginated(email, pageable);
+	}
+
 }
