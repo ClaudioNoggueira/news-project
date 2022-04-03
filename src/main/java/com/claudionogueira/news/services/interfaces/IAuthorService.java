@@ -18,4 +18,6 @@ public interface IAuthorService {
 	Page<Author> findByLastNamePaginated(String lastName, Pageable pageable);
 	
 	void add(Author entity);
+	
+	boolean doesTheEmailAlreadyExists(String email);
 }

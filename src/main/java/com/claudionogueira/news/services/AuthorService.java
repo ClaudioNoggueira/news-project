@@ -47,8 +47,20 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
+	public boolean doesTheEmailAlreadyExists(String email) {
+		Author obj = repo.findByEmail(email);
+		if (obj == null) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public void add(Author entity) {
-		repo.save(entity);		
+		if (this.doesTheEmailAlreadyExists(entity.getEmail())) {
+			throw new RuntimeException("Email '" + entity.getEmail() + "' already in use.");
+		}
+		repo.save(entity);
 	}
 
 }

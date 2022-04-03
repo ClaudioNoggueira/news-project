@@ -17,4 +17,6 @@ public interface AuthorRepo extends JpaRepository<Author, Long> {
 	Page<Author> findByFirstNameContainingIgnoreCase(String firstName, Pageable pageable);
 
 	Page<Author> findByLastNameContainingIgnoreCase(String lastName, Pageable pageable);
+
+	Author findByEmail(String email);
 }
