@@ -8,4 +8,6 @@ import com.claudionogueira.news.models.News;
 public interface INewsService {
 
 	Page<News> findAll(Pageable pageable);
+	
+	Page<News> findByTitlePaginated(String title, Pageable pageable);
 }

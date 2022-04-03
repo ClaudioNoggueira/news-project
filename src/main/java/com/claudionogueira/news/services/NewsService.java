@@ -21,4 +21,9 @@ public class NewsService implements INewsService {
 	public Page<News> findAll(Pageable pageable) {
 		return repo.findAll(pageable);
 	}
+
+	@Override
+	public Page<News> findByTitlePaginated(String title, Pageable pageable) {
+		return repo.findByTitleContainingIgnoreCase(title, pageable);
+	}
 }
