@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.repositories.AuthorRepo;
@@ -58,7 +59,7 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public void add(Author entity) {
 		if (this.doesTheEmailAlreadyExists(entity.getEmail())) {
-			throw new RuntimeException("Email '" + entity.getEmail() + "' already in use.");
+			throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
 		}
 		repo.save(entity);
 	}
