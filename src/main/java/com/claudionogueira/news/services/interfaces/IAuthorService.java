@@ -13,6 +13,8 @@ public interface IAuthorService {
 
 	Page<Author> findByEmailPaginated(String email, Pageable pageable);
 
+	Page<Author> findByFullNamePageable(String fullName, Pageable pageable);
+	
 	Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable);
 
 	Page<Author> findByLastNamePaginated(String lastName, Pageable pageable);

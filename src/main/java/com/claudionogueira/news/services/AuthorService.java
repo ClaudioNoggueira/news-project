@@ -1,8 +1,13 @@
 package com.claudionogueira.news.services;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +40,26 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public Page<Author> findByEmailPaginated(String email, Pageable pageable) {
 		return repo.findByEmailPaginated(email, pageable);
+	}
+
+	@Override
+	public Page<Author> findByFullNamePageable(String fullName, Pageable pageable) {
+		Page<Author> authorsByFirstName = repo.findByFirstNameContainingIgnoreCase(fullName, pageable);
+		Page<Author> authorsByLastName = repo.findByLastNameContainingIgnoreCase(fullName, pageable);
+
+		Set<Author> set = new HashSet<>();
+
+		for (Author author : authorsByFirstName) {
+			set.add(author);
+		}
+
+		for (Author author : authorsByLastName) {
+			set.add(author);
+		}
+
+		List<Author> list = new ArrayList<>(set);
+		Page<Author> page = new PageImpl<>(list);
+		return page;
 	}
 
 	@Override
@@ -82,4 +107,5 @@ public class AuthorService implements IAuthorService {
 
 		repo.save(objToBeUpdated);
 	}
+
 }
