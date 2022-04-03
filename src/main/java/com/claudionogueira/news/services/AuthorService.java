@@ -82,5 +82,4 @@ public class AuthorService implements IAuthorService {
 
 		repo.save(objToBeUpdated);
 	}
-
 }
