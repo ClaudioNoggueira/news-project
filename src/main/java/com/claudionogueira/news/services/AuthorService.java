@@ -46,4 +46,9 @@ public class AuthorService implements IAuthorService {
 		return repo.findByLastNameContainingIgnoreCase(lastName, pageable);
 	}
 
+	@Override
+	public void add(Author entity) {
+		repo.save(entity);		
+	}
+
 }

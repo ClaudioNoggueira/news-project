@@ -16,4 +16,6 @@ public interface IAuthorService {
 	Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable);
 	
 	Page<Author> findByLastNamePaginated(String lastName, Pageable pageable);
+	
+	void add(Author entity);
 }

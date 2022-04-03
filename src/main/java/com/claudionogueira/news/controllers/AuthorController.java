@@ -5,6 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +40,7 @@ public class AuthorController {
 			@RequestParam(value = "first-name", defaultValue = "") String firstName,
 			@RequestParam(value = "last-name", defaultValue = "") String lastName, Pageable pageable) {
 		Page<Author> page = Page.empty();
-		
+
 		// Find authors by email
 		if (!email.equals("")) {
 			page = service.findByEmailPaginated(email, pageable);
@@ -46,23 +48,29 @@ public class AuthorController {
 				return page;
 			}
 		}
-		
+
 		// Find authors by first name
-		if(!firstName.equals("")) {
+		if (!firstName.equals("")) {
 			page = service.findByFirstNamePaginated(firstName, pageable);
-			if(!page.isEmpty()) {
+			if (!page.isEmpty()) {
 				return page;
 			}
 		}
-		
+
 		// Find authors by last name
-		if(!lastName.equals("")) {
+		if (!lastName.equals("")) {
 			page = service.findByLastNamePaginated(lastName, pageable);
-			if(!page.isEmpty()) {
+			if (!page.isEmpty()) {
 				return page;
 			}
 		}
 
 		return service.findAll(pageable);
+	}
+
+	@PostMapping(value = "/add-author")
+	public ResponseEntity<Void> add(@RequestBody Author entity) {
+		service.add(entity);
+		return ResponseEntity.ok().build();
 	}
 }
