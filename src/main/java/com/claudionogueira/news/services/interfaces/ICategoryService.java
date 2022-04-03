@@ -8,4 +8,6 @@ import com.claudionogueira.news.models.Category;
 public interface ICategoryService {
 
 	Page<Category> findAll(Pageable pageable);
+
+	Page<Category> findByName(String name, Pageable pageable);
 }

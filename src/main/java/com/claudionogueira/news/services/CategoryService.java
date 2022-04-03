@@ -21,4 +21,9 @@ public class CategoryService implements ICategoryService {
 	public Page<Category> findAll(Pageable pageable) {
 		return repo.findAll(pageable);
 	}
+
+	@Override
+	public Page<Category> findByName(String name, Pageable pageable) {
+		return repo.findByNameContainingIgnoreCase(name, pageable);
+	}
 }

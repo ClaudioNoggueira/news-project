@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.models.Category;
@@ -18,9 +19,21 @@ public class CategoryController {
 	public CategoryController(CategoryService service) {
 		this.service = service;
 	}
-	
+
 	@GetMapping
-	public Page<Category> findAll(Pageable pageable){
+	public Page<Category> findAll(Pageable pageable) {
+		return service.findAll(pageable);
+	}
+
+	@GetMapping(value = "/search")
+	public Page<Category> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
+		if (!name.equals("")) {
+			Page<Category> page = service.findByName(name, pageable);
+			if (!page.isEmpty()) {
+				return page;
+			}
+		}
+
 		return service.findAll(pageable);
 	}
 }
