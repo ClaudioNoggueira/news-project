@@ -35,7 +35,8 @@ public class AuthorController {
 
 	@GetMapping(value = "/search")
 	public Page<Author> search(@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "first-name", defaultValue = "") String firstName, Pageable pageable) {
+			@RequestParam(value = "first-name", defaultValue = "") String firstName,
+			@RequestParam(value = "last-name", defaultValue = "") String lastName, Pageable pageable) {
 		Page<Author> page = Page.empty();
 		
 		// Find authors by email
@@ -49,6 +50,14 @@ public class AuthorController {
 		// Find authors by first name
 		if(!firstName.equals("")) {
 			page = service.findByFirstNamePaginated(firstName, pageable);
+			if(!page.isEmpty()) {
+				return page;
+			}
+		}
+		
+		// Find authors by last name
+		if(!lastName.equals("")) {
+			page = service.findByLastNamePaginated(lastName, pageable);
 			if(!page.isEmpty()) {
 				return page;
 			}
