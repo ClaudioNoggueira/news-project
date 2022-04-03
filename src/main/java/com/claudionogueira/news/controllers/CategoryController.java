@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,9 +29,9 @@ public class CategoryController {
 	public Page<Category> findAll(Pageable pageable) {
 		return service.findAll(pageable);
 	}
-	
+
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Category> findById(@PathVariable Long id){
+	public ResponseEntity<Category> findById(@PathVariable Long id) {
 		Category obj = service.findById(id);
 		return ResponseEntity.ok(obj);
 	}
@@ -46,10 +47,16 @@ public class CategoryController {
 
 		return service.findAll(pageable);
 	}
-	
+
 	@PostMapping(value = "/add-category")
-	public ResponseEntity<Void> add(@RequestBody Category entity){
+	public ResponseEntity<Void> add(@RequestBody Category entity) {
 		service.add(entity);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping(value = "/update-category/{id}")
+	public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Category entity) {
+		service.update(id, entity);
 		return ResponseEntity.ok().build();
 	}
 }

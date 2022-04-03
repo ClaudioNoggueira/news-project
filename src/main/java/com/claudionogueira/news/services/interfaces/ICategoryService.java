@@ -16,4 +16,6 @@ public interface ICategoryService {
 	boolean doesTheCategoryNameAlreadyExists(String name);
 	
 	void add(Category entity);
+	
+	void update(Long id, Category entity);
 }

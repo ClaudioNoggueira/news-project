@@ -54,4 +54,18 @@ public class CategoryService implements ICategoryService {
 		repo.save(entity);
 	}
 
+	@Override
+	public void update(Long id, Category entity) {
+		if (this.doesTheCategoryNameAlreadyExists(entity.getName())) {
+			throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+		}
+
+		Category objToBeUpdated = this.findById(id);
+		if (!entity.getName().equals("") && entity.getName() != null) {
+			objToBeUpdated.setName(entity.getName());
+		}
+
+		repo.save(objToBeUpdated);
+	}
+
 }
