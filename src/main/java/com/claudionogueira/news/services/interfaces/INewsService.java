@@ -12,4 +12,6 @@ public interface INewsService {
 	Page<News> findByTitlePaginated(String title, Pageable pageable);
 	
 	News findById(Long id);
+	
+	Page<News> findByAuthorName(String name, Pageable pageable);
 }

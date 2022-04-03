@@ -34,13 +34,22 @@ public class NewsController {
 	}
 
 	@GetMapping(value = "/search")
-	public Page<News> search(@RequestParam(value = "title", defaultValue = "") String title, Pageable pageable) {
+	public Page<News> search(@RequestParam(value = "title", defaultValue = "") String title,
+			@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
 		Page<News> page = Page.empty();
 
 		// Find news by title
 		if (!title.equals("")) {
 			page = service.findByTitlePaginated(title, pageable);
 			if (!page.isEmpty()) {
+				return page;
+			}
+		}
+		
+		// Find news by name
+		if(!name.equals("")) {
+			page= service.findByAuthorName(name, pageable);
+			if(!page.isEmpty()) {
 				return page;
 			}
 		}

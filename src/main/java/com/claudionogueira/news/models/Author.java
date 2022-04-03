@@ -80,4 +80,11 @@ public class Author implements Serializable {
 		this.email = email;
 	}
 
+	public Set<News> getAuthorNews() {
+		return authorNews;
+	}
+
+	public void setAuthorNews(Set<News> authorNews) {
+		this.authorNews = authorNews;
+	}
 }
