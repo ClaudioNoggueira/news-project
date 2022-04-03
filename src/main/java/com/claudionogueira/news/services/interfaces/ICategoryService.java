@@ -10,4 +10,6 @@ public interface ICategoryService {
 	Page<Category> findAll(Pageable pageable);
 
 	Page<Category> findByName(String name, Pageable pageable);
+	
+	Category findById(Long id);
 }
