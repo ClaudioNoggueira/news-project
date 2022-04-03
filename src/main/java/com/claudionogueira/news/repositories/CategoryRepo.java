@@ -11,4 +11,6 @@ import com.claudionogueira.news.models.Category;
 public interface CategoryRepo extends JpaRepository<Category, Long> {
 
 	Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
+	
+	Category findByNameIgnoreCase(String name);
 }

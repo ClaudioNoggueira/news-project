@@ -38,7 +38,7 @@ public class CategoryController {
 	@GetMapping(value = "/search")
 	public Page<Category> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
 		if (!name.equals("")) {
-			Page<Category> page = service.findByName(name, pageable);
+			Page<Category> page = service.findByNamePaginated(name, pageable);
 			if (!page.isEmpty()) {
 				return page;
 			}
