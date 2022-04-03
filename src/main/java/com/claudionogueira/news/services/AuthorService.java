@@ -64,4 +64,23 @@ public class AuthorService implements IAuthorService {
 		repo.save(entity);
 	}
 
+	@Override
+	public void update(Long id, Author entity) {
+		if (this.doesTheEmailAlreadyExists(entity.getEmail())) {
+			throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
+		}
+
+		Author objToBeUpdated = this.findById(id);
+		if (!entity.getFirstName().equals("") && entity.getFirstName() != null)
+			objToBeUpdated.setFirstName(entity.getFirstName());
+
+		if (!entity.getLastName().equals("") && entity.getLastName() != null)
+			objToBeUpdated.setLastName(entity.getLastName());
+
+		if (!entity.getEmail().equals("") && entity.getEmail() != null)
+			objToBeUpdated.setEmail(entity.getEmail());
+
+		repo.save(objToBeUpdated);
+	}
+
 }
