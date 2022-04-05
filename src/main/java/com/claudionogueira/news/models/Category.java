@@ -1,12 +1,15 @@
 package com.claudionogueira.news.models;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -20,6 +23,9 @@ public class Category implements Serializable {
 
 	@Column(name = "name")
 	private String name;
+
+	@OneToMany(mappedBy = "id.category")
+	private Set<CategoryNews> news = new HashSet<>();
 
 	public Category() {
 
@@ -47,4 +53,7 @@ public class Category implements Serializable {
 		this.name = name;
 	}
 
+	public Set<CategoryNews> getNews() {
+		return news;
+	}
 }

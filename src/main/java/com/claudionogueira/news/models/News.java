@@ -2,6 +2,8 @@ package com.claudionogueira.news.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,6 +37,9 @@ public class News implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "author_id")
 	private Author author;
+
+	@OneToMany(mappedBy = "id.news")
+	private Set<CategoryNews> categories = new HashSet<>();
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	private LocalDate date;
@@ -91,4 +97,7 @@ public class News implements Serializable {
 		this.date = date;
 	}
 
+	public Set<CategoryNews> getCategories() {
+		return categories;
+	}
 }
