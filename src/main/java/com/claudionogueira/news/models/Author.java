@@ -31,7 +31,7 @@ public class Author implements Serializable {
 
 	@Column(name = "email")
 	private String email;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "author")
 	private Set<News> authorNews = new HashSet<>();
@@ -82,9 +82,5 @@ public class Author implements Serializable {
 
 	public Set<News> getAuthorNews() {
 		return authorNews;
-	}
-
-	public void setAuthorNews(Set<News> authorNews) {
-		this.authorNews = authorNews;
 	}
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.NewsDTO;
-import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.services.NewsService;
 
 @RestController
@@ -33,8 +32,8 @@ public class NewsController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<News> findById(@PathVariable Long id) {
-		News body = service.findById(id);
+	public ResponseEntity<NewsDTO> findById(@PathVariable Long id) {
+		NewsDTO body = service.findByIdDTO(id);
 		return ResponseEntity.ok(body);
 	}
 
@@ -45,7 +44,7 @@ public class NewsController {
 
 		// Find news by title
 		if (!title.equals("")) {
-			page = service.findByTitlePaginated(title, pageable).map(x -> new NewsDTO(x));
+			page = service.findByTitlePaginated(title, pageable);
 			if (!page.isEmpty()) {
 				return page;
 			}
@@ -53,7 +52,7 @@ public class NewsController {
 
 		// Find news by author name
 		if (!name.equals("")) {
-			page = service.findByAuthorName(name, pageable).map(x -> new NewsDTO(x));
+			page = service.findByAuthorName(name, pageable);
 			if (!page.isEmpty()) {
 				return page;
 			}

@@ -8,19 +8,29 @@ import com.claudionogueira.news.models.News;
 
 public interface INewsService {
 
-	Page<NewsDTO> findAll(Pageable pageable);
+	NewsDTO convertNewsToDTO(News news);
 
-	Page<News> findByTitlePaginated(String title, Pageable pageable);
-
-	News findById(Long id);
-
-	Page<News> findByAuthorName(String name, Pageable pageable);
+	Page<NewsDTO> convertPageToDTO(Page<News> page);
 
 	boolean isDateValid(String dateStr);
 
+	// GET
+	News findById(Long id);
+
+	NewsDTO findByIdDTO(Long id);
+
+	Page<NewsDTO> findAll(Pageable pageable);
+
+	Page<NewsDTO> findByTitlePaginated(String title, Pageable pageable);
+
+	Page<NewsDTO> findByAuthorName(String name, Pageable pageable);
+
+	// POST
 	void add(NewsDTO dto);
 
+	// PUT
 	void update(Long id, NewsDTO dto);
 
+	// DELETE
 	void delete(Long id);
 }

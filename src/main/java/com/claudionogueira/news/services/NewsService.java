@@ -48,32 +48,13 @@ public class NewsService implements INewsService {
 	@Override
 	public Page<NewsDTO> findAll(Pageable pageable) {
 		Page<News> page = newsRepo.findAll(pageable);
-		List<NewsDTO> list = new ArrayList<>();
-
-		for (News news : page) {
-			NewsDTO dto = new NewsDTO(news);
-			for (CategoryNews categoryNews : news.getCategories()) {
-				// Category id based on CategoryNews id
-				long category_id = categoryNews.getId().getCategory().getId();
-
-				// Find category by id or throw exception
-				Category category = categoryRepo.findById(category_id).orElseThrow(
-						() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
-
-				// Converting to CategoryDTO
-				CategoryDTO categoryDTO = new CategoryDTO(category);
-
-				// Add categoryDTO to NewsDTO' Set<CategoryDTO> categories
-				dto.getCategories().add(categoryDTO);
-			}
-			list.add(dto);
-		}
-		return new PageImpl<NewsDTO>(list);
+		return this.convertPageToDTO(page);
 	}
 
 	@Override
-	public Page<News> findByTitlePaginated(String title, Pageable pageable) {
-		return newsRepo.findByTitleContainingIgnoreCase(title, pageable);
+	public Page<NewsDTO> findByTitlePaginated(String title, Pageable pageable) {
+		Page<News> page = newsRepo.findByTitleContainingIgnoreCase(title, pageable);
+		return this.convertPageToDTO(page);
 	}
 
 	@Override
@@ -83,28 +64,72 @@ public class NewsService implements INewsService {
 	}
 
 	@Override
-	public Page<News> findByAuthorName(String name, Pageable pageable) {
+	public NewsDTO findByIdDTO(Long id) {
+		News news = this.findById(id);
+		return this.convertNewsToDTO(news);
+	}
 
-		Page<Author> authorsByFirstName = authorRepo.findByFirstNameContainingIgnoreCase(name, pageable);
-		Page<Author> authorsByLastName = authorRepo.findByLastNameContainingIgnoreCase(name, pageable);
-
+	@Override
+	public Page<NewsDTO> findByAuthorName(String name, Pageable pageable) {
+		// All authors
 		Set<News> set = new HashSet<>();
 
-		for (Author author : authorsByFirstName) {
+		// Same page for both queries
+		Page<Author> page = authorRepo.findByFirstNameContainingIgnoreCase(name, pageable);
+		for (Author author : page) {
+			for (News authorNews : author.getAuthorNews()) {
+				set.add(authorNews);
+			}
+		}
+		// Clear page to use in the next query
+		page = Page.empty();
+
+		page = authorRepo.findByLastNameContainingIgnoreCase(name, pageable);
+		for (Author author : page) {
 			for (News authorNews : author.getAuthorNews()) {
 				set.add(authorNews);
 			}
 		}
 
-		for (Author author : authorsByLastName) {
-			for (News authorNews : author.getAuthorNews()) {
-				set.add(authorNews);
-			}
-		}
-
+		// Convert set to list
 		List<News> list = new ArrayList<>(set);
-		Page<News> page = new PageImpl<News>(list);
-		return page;
+
+		// Create page using list<News> and setting as argument for convertToDTO
+		return this.convertPageToDTO(new PageImpl<News>(list));
+	}
+
+	@Override
+	public NewsDTO convertNewsToDTO(News news) {
+		NewsDTO dto = new NewsDTO(news);
+
+		for (CategoryNews categoryNews : news.getCategories()) {
+
+			// Category id based on CategoryNews id
+			long category_id = categoryNews.getId().getCategory().getId();
+
+			// Find category by id or throw exception
+			Category category = categoryRepo.findById(category_id).orElseThrow(
+					() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
+
+			// Converting to CategoryDTO
+			CategoryDTO categoryDTO = new CategoryDTO(category);
+
+			// Add categoryDTO to NewsDTO' Set<CategoryDTO> categories
+			dto.getCategories().add(categoryDTO);
+		}
+
+		return dto;
+	}
+
+	@Override
+	public Page<NewsDTO> convertPageToDTO(Page<News> page) {
+		List<NewsDTO> list = new ArrayList<>();
+
+		for (News news : page) {
+			list.add(this.convertNewsToDTO(news));
+		}
+
+		return new PageImpl<NewsDTO>(list);
 	}
 
 	@Override
@@ -199,7 +224,7 @@ public class NewsService implements INewsService {
 	@Override
 	public void delete(Long id) {
 		News newsToBeDeleted = this.findById(id);
-		
+
 		// DELETE all related rows in TB_CATEGORY_NEWS
 		for (CategoryNews categoryNews : newsToBeDeleted.getCategories()) {
 			categoryNewsRepo.delete(categoryNews);
