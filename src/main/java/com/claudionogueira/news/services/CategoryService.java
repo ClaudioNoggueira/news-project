@@ -40,32 +40,35 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public boolean doesTheCategoryNameAlreadyExists(String name) {
 		Category obj = repo.findByNameIgnoreCase(name);
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
+
 		return true;
 	}
 
 	@Override
 	public void add(Category entity) {
-		if (this.doesTheCategoryNameAlreadyExists(entity.getName())) {
-			throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+		if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank()) {
+			if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
+				throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+
+			repo.save(entity);
 		}
-		repo.save(entity);
 	}
 
 	@Override
 	public void update(Long id, Category entity) {
-		if (this.doesTheCategoryNameAlreadyExists(entity.getName())) {
-			throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
-		}
+		if (id != null && id >= 0) {
+			if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank()) {
+				if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
+					throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
 
-		Category objToBeUpdated = this.findById(id);
-		if (!entity.getName().equals("") && entity.getName() != null) {
-			objToBeUpdated.setName(entity.getName());
-		}
+				Category objToBeUpdated = this.findById(id);
+				if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank())
+					objToBeUpdated.setName(entity.getName());
 
-		repo.save(objToBeUpdated);
+				repo.save(objToBeUpdated);
+			}
+		}
 	}
-
 }
