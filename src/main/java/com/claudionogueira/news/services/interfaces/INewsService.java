@@ -22,4 +22,5 @@ public interface INewsService {
 
 	void update(Long id, NewsDTO dto);
 
+	void delete(Long id);
 }

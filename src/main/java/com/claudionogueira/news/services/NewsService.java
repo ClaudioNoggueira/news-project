@@ -180,7 +180,7 @@ public class NewsService implements INewsService {
 			newsToBeUpdated.setDate(dto.getDate());
 
 		if (!dto.getCategories().isEmpty()) {
-			// DELETE previous categories the news had
+			// DELETE all related rows in TB_CATEGORY_NEWS
 			for (CategoryNews entity : newsToBeUpdated.getCategories()) {
 				categoryNewsRepo.delete(entity);
 			}
@@ -194,5 +194,16 @@ public class NewsService implements INewsService {
 		}
 
 		newsToBeUpdated = newsRepo.saveAndFlush(newsToBeUpdated);
+	}
+
+	@Override
+	public void delete(Long id) {
+		News newsToBeDeleted = this.findById(id);
+		
+		// DELETE all related rows in TB_CATEGORY_NEWS
+		for (CategoryNews categoryNews : newsToBeDeleted.getCategories()) {
+			categoryNewsRepo.delete(categoryNews);
+		}
+		newsRepo.delete(newsToBeDeleted);
 	}
 }
