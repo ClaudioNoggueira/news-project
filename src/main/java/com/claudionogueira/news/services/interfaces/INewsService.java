@@ -17,4 +17,6 @@ public interface INewsService {
 	Page<News> findByAuthorName(String name, Pageable pageable);
 	
 	void add(NewsDTO dto);
+	
+	void update(Long id, NewsDTO dto);
 }

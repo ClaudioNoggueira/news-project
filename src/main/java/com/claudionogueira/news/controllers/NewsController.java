@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,6 +64,12 @@ public class NewsController {
 	@PostMapping(value = "/add-news")
 	public ResponseEntity<Void> add(@RequestBody NewsDTO dto) {
 		service.add(dto);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping(value = "/update-news/{id}")
+	public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody NewsDTO dto) {
+		service.update(id, dto);
 		return ResponseEntity.ok().build();
 	}
 }

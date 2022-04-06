@@ -7,6 +7,6 @@ import com.claudionogueira.news.models.CategoryNews;
 import com.claudionogueira.news.models.CategoryNewsPK;
 
 @Repository
-public interface CategoryNewsRepo extends JpaRepository<CategoryNews, CategoryNewsPK>{
+public interface CategoryNewsRepo extends JpaRepository<CategoryNews, CategoryNewsPK> {
 
 }

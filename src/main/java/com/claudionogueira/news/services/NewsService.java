@@ -62,7 +62,7 @@ public class NewsService implements INewsService {
 				// Converting to CategoryDTO
 				CategoryDTO categoryDTO = new CategoryDTO(category);
 
-				// Add categoryDTO to NewsDTO' Set<CategoryDTO> categories 
+				// Add categoryDTO to NewsDTO' Set<CategoryDTO> categories
 				dto.getCategories().add(categoryDTO);
 			}
 			list.add(dto);
@@ -129,5 +129,54 @@ public class NewsService implements INewsService {
 			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
 			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
+	}
+
+	@Override
+	public void update(Long id, NewsDTO dto) {
+		// GET news to be updated by id or throw exception
+		News newsToBeUpdated = newsRepo.findById(id)
+				.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + id + "' not found."));
+
+		// Check if categories already exists or save a new one
+		for (CategoryDTO obj : dto.getCategories()) {
+			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+			if (category == null) {
+				category = new Category(null, obj.getName());
+				categoryRepo.save(category);
+			}
+		}
+
+		// GET author by id or throw exception
+		Long author_id = dto.getAuthor().getId();
+		if (author_id != null) {
+			Author author = authorRepo.findById(author_id)
+					.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+			newsToBeUpdated.setAuthor(author);
+		}
+
+		if (dto.getTitle() != null && !dto.getTitle().equals(""))
+			newsToBeUpdated.setTitle(dto.getTitle());
+
+		if (dto.getContent() != null && !dto.getContent().equals(""))
+			newsToBeUpdated.setContent(dto.getContent());
+
+		if (dto.getDate() != null)
+			newsToBeUpdated.setDate(dto.getDate());
+
+		if (!dto.getCategories().isEmpty()) {
+			// DELETE previous categories the news had
+			for (CategoryNews entity : newsToBeUpdated.getCategories()) {
+				categoryNewsRepo.delete(entity);
+			}
+			newsToBeUpdated.getCategories().clear();
+
+			// Save all new categories of news
+			for (CategoryDTO obj : dto.getCategories()) {
+				Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+				categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, newsToBeUpdated)));
+			}
+		}
+
+		newsToBeUpdated = newsRepo.saveAndFlush(newsToBeUpdated);
 	}
 }
