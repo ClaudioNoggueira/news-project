@@ -9,14 +9,17 @@ import com.claudionogueira.news.models.News;
 public interface INewsService {
 
 	Page<NewsDTO> findAll(Pageable pageable);
-	
+
 	Page<News> findByTitlePaginated(String title, Pageable pageable);
-	
+
 	News findById(Long id);
-	
+
 	Page<News> findByAuthorName(String name, Pageable pageable);
-	
+
+	boolean isDateValid(String dateStr);
+
 	void add(NewsDTO dto);
-	
+
 	void update(Long id, NewsDTO dto);
+
 }

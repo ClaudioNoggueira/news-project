@@ -24,6 +24,7 @@ import com.claudionogueira.news.repositories.CategoryNewsRepo;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.INewsService;
+import com.claudionogueira.news.services.utils.DateValidator;
 
 @Service
 public class NewsService implements INewsService {
@@ -107,6 +108,11 @@ public class NewsService implements INewsService {
 	}
 
 	@Override
+	public boolean isDateValid(String dateStr) {
+		return DateValidator.isValid(dateStr);
+	}
+
+	@Override
 	public void add(NewsDTO dto) {
 		// Check if any of the categories exists
 		for (CategoryDTO obj : dto.getCategories()) {
@@ -118,16 +124,26 @@ public class NewsService implements INewsService {
 			}
 		}
 
-		// Check if author with the id exists
-		Author author = authorRepo.findById(dto.getAuthor().getId()).orElseThrow(
-				() -> new ObjectNotFoundException("Author with ID: '" + dto.getAuthor().getId() + "' not found."));
+		// Check if author with the id exists or throw exception
+		Long author_id = dto.getAuthor().getId();
+		if (author_id != null) {
+			Author author = authorRepo.findById(author_id)
+					.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 
-		News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
-		news = newsRepo.saveAndFlush(news);
+			if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
+				if (dto.getContent() != null && !dto.getContent().isEmpty()) {
+					if (dto.getDate() != null && this.isDateValid(dto.getDate().toString())) {
+						News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
+						news = newsRepo.saveAndFlush(news);
 
-		for (CategoryDTO obj : dto.getCategories()) {
-			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
-			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
+						// Save categories of the new news
+						for (CategoryDTO obj : dto.getCategories()) {
+							Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+							categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -154,13 +170,13 @@ public class NewsService implements INewsService {
 			newsToBeUpdated.setAuthor(author);
 		}
 
-		if (dto.getTitle() != null && !dto.getTitle().equals(""))
+		if (dto.getTitle() != null && !dto.getTitle().isEmpty())
 			newsToBeUpdated.setTitle(dto.getTitle());
 
-		if (dto.getContent() != null && !dto.getContent().equals(""))
+		if (dto.getContent() != null && !dto.getContent().isEmpty())
 			newsToBeUpdated.setContent(dto.getContent());
 
-		if (dto.getDate() != null)
+		if (dto.getDate() != null && this.isDateValid(dto.getDate().toString()))
 			newsToBeUpdated.setDate(dto.getDate());
 
 		if (!dto.getCategories().isEmpty()) {
