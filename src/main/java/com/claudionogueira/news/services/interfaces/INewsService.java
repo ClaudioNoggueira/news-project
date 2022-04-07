@@ -12,8 +12,6 @@ public interface INewsService {
 
 	Page<NewsDTO> convertPageToDTO(Page<News> page);
 
-	boolean isDateValid(String dateStr);
-
 	// GET
 	News findById(Long id);
 

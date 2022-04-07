@@ -24,7 +24,6 @@ import com.claudionogueira.news.repositories.CategoryNewsRepo;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.INewsService;
-import com.claudionogueira.news.services.utils.DateValidator;
 
 @Service
 public class NewsService implements INewsService {
@@ -133,11 +132,6 @@ public class NewsService implements INewsService {
 	}
 
 	@Override
-	public boolean isDateValid(String dateStr) {
-		return DateValidator.isValid(dateStr);
-	}
-
-	@Override
 	public void add(NewsDTO dto) {
 		// Check if any of the categories exists
 		for (CategoryDTO obj : dto.getCategories()) {
@@ -157,7 +151,7 @@ public class NewsService implements INewsService {
 
 			if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
 				if (dto.getContent() != null && !dto.getContent().isEmpty()) {
-					if (dto.getDate() != null && this.isDateValid(dto.getDate().toString())) {
+					if (dto.getDate() != null) {
 						News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
 						news = newsRepo.saveAndFlush(news);
 
@@ -201,7 +195,7 @@ public class NewsService implements INewsService {
 		if (dto.getContent() != null && !dto.getContent().isEmpty())
 			newsToBeUpdated.setContent(dto.getContent());
 
-		if (dto.getDate() != null && this.isDateValid(dto.getDate().toString()))
+		if (dto.getDate() != null)
 			newsToBeUpdated.setDate(dto.getDate());
 
 		if (!dto.getCategories().isEmpty()) {
