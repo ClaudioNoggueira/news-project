@@ -34,14 +34,6 @@ public class NewsDTO implements Serializable {
 		author = news.getAuthor();
 	}
 
-	public NewsDTO(Long id, String title, String content, LocalDate date, Author author) {
-		this.id = id;
-		this.title = title;
-		this.content = content;
-		this.date = date;
-		this.author = author;
-	}
-
 	public Long getId() {
 		return id;
 	}
