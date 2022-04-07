@@ -52,18 +52,18 @@ public class AuthorController {
 			@RequestParam(value = "full-name", defaultValue = "") String fullName,
 			@RequestParam(value = "first-name", defaultValue = "") String firstName,
 			@RequestParam(value = "last-name", defaultValue = "") String lastName, Pageable pageable) {
-		Page<Author> page = Page.empty();
 
 		// Find authors by email
 		if (!email.equals("") && !email.isBlank()) {
-			page = service.findByEmailPaginated(email, pageable);
+			Page<AuthorDTO> page = service.findByEmailPaginated(email, pageable);
 			if (!page.isEmpty()) {
-				return page.map(author -> new AuthorDTO(author));
+				return page;
 			}
 		}
 
+		// Find authors by both first and last name
 		if (!fullName.equals("") && !email.isBlank()) {
-			page = service.findByFullNamePageable(fullName, pageable);
+			Page<Author> page = service.findByFullNamePageable(fullName, pageable);
 			if (!page.isEmpty()) {
 				return page.map(author -> new AuthorDTO(author));
 			}
@@ -71,7 +71,7 @@ public class AuthorController {
 
 		// Find authors by first name
 		if (!firstName.equals("") && !email.isBlank()) {
-			page = service.findByFirstNamePaginated(firstName, pageable);
+			Page<Author> page = service.findByFirstNamePaginated(firstName, pageable);
 			if (!page.isEmpty()) {
 				return page.map(author -> new AuthorDTO(author));
 			}
@@ -79,7 +79,7 @@ public class AuthorController {
 
 		// Find authors by last name
 		if (!lastName.equals("") && !email.isBlank()) {
-			page = service.findByLastNamePaginated(lastName, pageable);
+			Page<Author> page = service.findByLastNamePaginated(lastName, pageable);
 			if (!page.isEmpty()) {
 				return page.map(author -> new AuthorDTO(author));
 			}

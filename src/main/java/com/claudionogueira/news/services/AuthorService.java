@@ -47,8 +47,9 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
-	public Page<Author> findByEmailPaginated(String email, Pageable pageable) {
-		return repo.findByEmailPaginated(email, pageable);
+	public Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable) {
+		Page<Author> page = repo.findByEmailPaginated(email, pageable);
+		return this.convertPageToDTO(page);
 	}
 
 	@Override
