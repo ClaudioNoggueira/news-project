@@ -54,14 +54,14 @@ public class AuthorController {
 		Page<Author> page = Page.empty();
 
 		// Find authors by email
-		if (!email.equals("")) {
+		if (!email.equals("") && !email.isBlank()) {
 			page = service.findByEmailPaginated(email, pageable);
 			if (!page.isEmpty()) {
 				return page;
 			}
 		}
 
-		if (!fullName.equals("")) {
+		if (!fullName.equals("") && !email.isBlank()) {
 			page = service.findByFullNamePageable(fullName, pageable);
 			if (!page.isEmpty()) {
 				return page;
@@ -69,7 +69,7 @@ public class AuthorController {
 		}
 
 		// Find authors by first name
-		if (!firstName.equals("")) {
+		if (!firstName.equals("") && !email.isBlank()) {
 			page = service.findByFirstNamePaginated(firstName, pageable);
 			if (!page.isEmpty()) {
 				return page;
@@ -77,7 +77,7 @@ public class AuthorController {
 		}
 
 		// Find authors by last name
-		if (!lastName.equals("")) {
+		if (!lastName.equals("") && !email.isBlank()) {
 			page = service.findByLastNamePaginated(lastName, pageable);
 			if (!page.isEmpty()) {
 				return page;
