@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.services.AuthorService;
 
@@ -31,8 +32,17 @@ public class AuthorController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Author> findById(@PathVariable Long id) {
-		Author body = service.findById(id);
+	public ResponseEntity<Author> findById(@PathVariable String id) {
+		if (id == null)
+			throw new BadRequestException("Author ID must NOT be null.");
+
+		char[] digits = id.toCharArray();
+		for (char digit : digits) {
+			if (!Character.isDigit(digit))
+				throw new BadRequestException("Author ID must be a numeric value.");
+		}
+
+		Author body = service.findById(Long.parseLong(id));
 		return ResponseEntity.ok(body);
 	}
 
