@@ -10,36 +10,61 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
+import com.claudionogueira.news.models.CategoryNews;
+import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.CategoryRepo;
+import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.ICategoryService;
 
 @Service
 public class CategoryService implements ICategoryService {
 
-	private final CategoryRepo repo;
+	private final CategoryRepo categoryRepo;
 
-	public CategoryService(CategoryRepo repo) {
-		this.repo = repo;
+	private final NewsRepo newsRepo;
+
+	public CategoryService(CategoryRepo categoryRepo, NewsRepo newsRepo) {
+		this.categoryRepo = categoryRepo;
+		this.newsRepo = newsRepo;
 	}
 
 	@Override
 	public Page<CategoryDTO> findAll(Pageable pageable) {
-		Page<Category> page = repo.findAll(pageable);
+		Page<Category> page = categoryRepo.findAll(pageable);
 		return this.convertPageToDTO(page);
 	}
 
 	@Override
 	public Page<Category> findByNamePaginated(String name, Pageable pageable) {
-		return repo.findByNameContainingIgnoreCase(name, pageable);
+		return categoryRepo.findByNameContainingIgnoreCase(name, pageable);
 	}
 
 	@Override
 	public Category findById(Long id) {
-		Optional<Category> obj = repo.findById(id);
+		Optional<Category> obj = categoryRepo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + id + "' not found."));
+	}
+
+	@Override
+	public CategoryDTO convertCategoryToDTO(Category category) {
+		CategoryDTO dto = new CategoryDTO(category);
+
+		for (CategoryNews categoryNews : category.getNews()) {
+			long news_id = categoryNews.getId().getNews().getId();
+
+			News news = newsRepo.findById(news_id)
+					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
+
+			NewsDTO newsDTO = new NewsDTO(news);
+
+			dto.getNews().add(newsDTO);
+		}
+
+		return dto;
 	}
 
 	@Override
@@ -47,7 +72,7 @@ public class CategoryService implements ICategoryService {
 		List<CategoryDTO> list = new ArrayList<>();
 
 		for (Category category : page) {
-			list.add(new CategoryDTO(category));
+			list.add(this.convertCategoryToDTO(category));
 		}
 
 		return new PageImpl<CategoryDTO>(list);
@@ -55,7 +80,7 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public boolean doesTheCategoryNameAlreadyExists(String name) {
-		Category obj = repo.findByNameIgnoreCase(name);
+		Category obj = categoryRepo.findByNameIgnoreCase(name);
 		if (obj == null)
 			return false;
 
@@ -68,7 +93,7 @@ public class CategoryService implements ICategoryService {
 			if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
 				throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
 
-			repo.save(entity);
+			categoryRepo.save(entity);
 		}
 	}
 
@@ -83,7 +108,7 @@ public class CategoryService implements ICategoryService {
 				if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank())
 					objToBeUpdated.setName(entity.getName());
 
-				repo.save(objToBeUpdated);
+				categoryRepo.save(objToBeUpdated);
 			}
 		}
 	}

@@ -1,6 +1,8 @@
 package com.claudionogueira.news.dto;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.claudionogueira.news.models.Category;
 
@@ -9,6 +11,8 @@ public class CategoryDTO implements Serializable {
 
 	private Long id;
 	private String name;
+
+	private Set<NewsDTO> news = new HashSet<>();
 
 	public CategoryDTO() {
 
@@ -40,4 +44,7 @@ public class CategoryDTO implements Serializable {
 		this.name = name;
 	}
 
+	public Set<NewsDTO> getNews() {
+		return news;
+	}
 }
