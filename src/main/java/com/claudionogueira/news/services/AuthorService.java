@@ -109,6 +109,15 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public void add(Author entity) {
+		if (entity.getEmail() == null || entity.getEmail().equals(""))
+			throw new BadRequestException("Email is mandatory and cannot be null, empty or blank.");
+
+		if (entity.getFirstName() == null || entity.getFirstName().equals(""))
+			throw new BadRequestException("First name is mandatory and cannot be null, empty or blank.");
+
+		if (entity.getLastName() == null || entity.getLastName().equals(""))
+			throw new BadRequestException("Last name is mandatory and cannot be null, empty or blank.");
+
 		if (this.doesTheEmailAlreadyExists(entity.getEmail()))
 			throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
 
@@ -117,18 +126,20 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public void update(Long id, Author entity) {
-		if (this.doesTheEmailAlreadyExists(entity.getEmail()))
-			throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
-
 		Author objToBeUpdated = this.findById(id);
-		if (!entity.getFirstName().equals("") && entity.getFirstName() != null)
+
+		if (entity.getEmail() != null && !entity.getEmail().equals("")) {
+			if (this.doesTheEmailAlreadyExists(entity.getEmail()))
+				throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
+
+			objToBeUpdated.setEmail(entity.getEmail());
+		}
+
+		if (entity.getFirstName() != null && !entity.getFirstName().equals(""))
 			objToBeUpdated.setFirstName(entity.getFirstName());
 
-		if (!entity.getLastName().equals("") && entity.getLastName() != null)
+		if (entity.getLastName() != null && !entity.getLastName().equals(""))
 			objToBeUpdated.setLastName(entity.getLastName());
-
-		if (!entity.getEmail().equals("") && entity.getEmail() != null)
-			objToBeUpdated.setEmail(entity.getEmail());
 
 		authorRepo.save(objToBeUpdated);
 	}
