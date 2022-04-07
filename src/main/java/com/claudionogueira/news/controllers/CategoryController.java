@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.services.CategoryService;
 
@@ -32,14 +33,23 @@ public class CategoryController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Category> findById(@PathVariable Long id) {
-		Category obj = service.findById(id);
-		return ResponseEntity.ok(obj);
+	public ResponseEntity<CategoryDTO> findById(@PathVariable String id) {
+		if (id == null)
+			throw new BadRequestException("Category ID must NOT be null.");
+
+		char[] digits = id.toString().toCharArray();
+		for (char digit : digits) {
+			if (!Character.isDigit(digit))
+				throw new BadRequestException("Category ID must be a numeric value");
+		}
+
+		CategoryDTO dto = service.findByIdDTO(Long.parseLong(id));
+		return ResponseEntity.ok(dto);
 	}
 
 	@GetMapping(value = "/search")
 	public Page<CategoryDTO> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
-		if (!name.equals("")) {
+		if (!name.equals("") && !name.isBlank()) {
 			Page<CategoryDTO> page = service.findByNamePaginated(name, pageable);
 			if (!page.isEmpty()) {
 				return page;

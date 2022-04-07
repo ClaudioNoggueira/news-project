@@ -46,8 +46,23 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public Category findById(Long id) {
-		Optional<Category> obj = categoryRepo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + id + "' not found."));
+		if (id != null) {
+			String[] digits = id.toString().split("");
+			for (String digit : digits) {
+				if (!Character.isDigit(digit.charAt(0))) {
+					throw new BadRequestException("Category ID must be a numeric value");
+				}
+			}
+			Optional<Category> obj = categoryRepo.findById(id);
+			return obj.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + id + "' not found."));
+		}
+		throw new BadRequestException("Category ID must not be null.");
+	}
+
+	@Override
+	public CategoryDTO findByIdDTO(Long id) {
+		Category category = this.findById(id);
+		return this.convertCategoryToDTO(category);
 	}
 
 	@Override

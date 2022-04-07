@@ -20,6 +20,8 @@ public interface ICategoryService {
 	Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable);
 
 	Category findById(Long id);
+	
+	CategoryDTO findByIdDTO(Long id);
 
 	// POST
 	void add(Category entity);
