@@ -1,11 +1,15 @@
 package com.claudionogueira.news.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
@@ -22,8 +26,9 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public Page<Category> findAll(Pageable pageable) {
-		return repo.findAll(pageable);
+	public Page<CategoryDTO> findAll(Pageable pageable) {
+		Page<Category> page = repo.findAll(pageable);
+		return this.convertPageToDTO(page);
 	}
 
 	@Override
@@ -35,6 +40,17 @@ public class CategoryService implements ICategoryService {
 	public Category findById(Long id) {
 		Optional<Category> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + id + "' not found."));
+	}
+
+	@Override
+	public Page<CategoryDTO> convertPageToDTO(Page<Category> page) {
+		List<CategoryDTO> list = new ArrayList<>();
+
+		for (Category category : page) {
+			list.add(new CategoryDTO(category));
+		}
+
+		return new PageImpl<CategoryDTO>(list);
 	}
 
 	@Override

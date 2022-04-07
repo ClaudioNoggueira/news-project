@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.services.CategoryService;
 
@@ -26,7 +27,7 @@ public class CategoryController {
 	}
 
 	@GetMapping
-	public Page<Category> findAll(Pageable pageable) {
+	public Page<CategoryDTO> findAll(Pageable pageable) {
 		return service.findAll(pageable);
 	}
 
@@ -37,11 +38,11 @@ public class CategoryController {
 	}
 
 	@GetMapping(value = "/search")
-	public Page<Category> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
+	public Page<CategoryDTO> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
 		if (!name.equals("")) {
 			Page<Category> page = service.findByNamePaginated(name, pageable);
 			if (!page.isEmpty()) {
-				return page;
+				return page.map(category -> new CategoryDTO(category));
 			}
 		}
 
