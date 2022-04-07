@@ -43,7 +43,7 @@ public class CategoryController {
 				throw new BadRequestException("Category ID must be a numeric value");
 		}
 
-		CategoryDTO dto = service.findByIdDTO(Long.parseLong(id));
+		CategoryDTO dto = service.findByIdDTO(id);
 		return ResponseEntity.ok(dto);
 	}
 
@@ -66,7 +66,7 @@ public class CategoryController {
 	}
 
 	@PutMapping(value = "/update-category/{id}")
-	public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Category entity) {
+	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody Category entity) {
 		service.update(id, entity);
 		return ResponseEntity.ok().build();
 	}

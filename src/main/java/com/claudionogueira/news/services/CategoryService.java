@@ -2,7 +2,6 @@ package com.claudionogueira.news.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,13 +44,23 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public Category findById(Long id) {
-		Optional<Category> obj = categoryRepo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + id + "' not found."));
+	public Category findById(String id) {
+		if (id == null)
+			throw new BadRequestException("Category ID must NOT be null.");
+
+		char[] digits = id.toCharArray();
+		for (char digit : digits) {
+			if (!Character.isDigit(digit))
+				throw new BadRequestException("Category ID must be a numeric value.");
+		}
+
+		long category_id = Long.parseLong(id);
+		return categoryRepo.findById(category_id)
+				.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 	}
 
 	@Override
-	public CategoryDTO findByIdDTO(Long id) {
+	public CategoryDTO findByIdDTO(String id) {
 		Category category = this.findById(id);
 		return this.convertCategoryToDTO(category);
 	}
@@ -96,27 +105,26 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public void add(Category entity) {
-		if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank()) {
-			if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
-				throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+		if (entity.getName() == null || entity.getName().isEmpty() || entity.getName().isBlank())
+			throw new BadRequestException("Category name is mandatory and cannot be null, empty or blank.");
 
-			categoryRepo.save(entity);
-		}
+		if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
+			throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+
+		categoryRepo.save(entity);
 	}
 
 	@Override
-	public void update(Long id, Category entity) {
-		if (id != null && id >= 0) {
-			if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank()) {
-				if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
-					throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+	public void update(String id, Category entity) {
+		Category objToBeUpdated = this.findById(id);
 
-				Category objToBeUpdated = this.findById(id);
-				if (entity.getName() != null && !entity.getName().isEmpty() && !entity.getName().isBlank())
-					objToBeUpdated.setName(entity.getName());
+		if (entity.getName() == null || entity.getName().isEmpty() || entity.getName().isBlank())
+			throw new BadRequestException("Category name is mandatory and cannot be null, empty or blank.");
 
-				categoryRepo.save(objToBeUpdated);
-			}
-		}
+		if (this.doesTheCategoryNameAlreadyExists(entity.getName()))
+			throw new BadRequestException("Category '" + entity.getName() + "' already exists.");
+
+		objToBeUpdated.setName(entity.getName());
+		categoryRepo.save(objToBeUpdated);
 	}
 }

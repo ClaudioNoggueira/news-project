@@ -19,13 +19,13 @@ public interface ICategoryService {
 
 	Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable);
 
-	Category findById(Long id);
+	Category findById(String id);
 	
-	CategoryDTO findByIdDTO(Long id);
+	CategoryDTO findByIdDTO(String id);
 
 	// POST
 	void add(Category entity);
 
 	// PUT
-	void update(Long id, Category entity);
+	void update(String id, Category entity);
 }
