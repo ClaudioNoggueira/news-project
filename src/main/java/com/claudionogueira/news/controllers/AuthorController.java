@@ -79,9 +79,9 @@ public class AuthorController {
 
 		// Find authors by last name
 		if (!lastName.equals("")) {
-			Page<Author> page = service.findByLastNamePaginated(lastName, pageable);
+			Page<AuthorDTO> page = service.findByLastNamePaginated(lastName, pageable);
 			if (!page.isEmpty()) {
-				return page.map(author -> new AuthorDTO(author));
+				return page;
 			}
 		}
 

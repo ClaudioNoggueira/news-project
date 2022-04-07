@@ -24,7 +24,7 @@ public interface IAuthorService {
 
 	Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable);
 
-	Page<Author> findByLastNamePaginated(String lastName, Pageable pageable);
+	Page<AuthorDTO> findByLastNamePaginated(String lastName, Pageable pageable);
 
 	boolean doesTheEmailAlreadyExists(String email);
 
