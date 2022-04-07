@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.services.AuthorService;
@@ -27,7 +28,7 @@ public class AuthorController {
 	}
 
 	@GetMapping
-	public Page<Author> findAll(Pageable pageable) {
+	public Page<AuthorDTO> findAll(Pageable pageable) {
 		return service.findAll(pageable);
 	}
 
@@ -47,7 +48,7 @@ public class AuthorController {
 	}
 
 	@GetMapping(value = "/search")
-	public Page<Author> search(@RequestParam(value = "email", defaultValue = "") String email,
+	public Page<AuthorDTO> search(@RequestParam(value = "email", defaultValue = "") String email,
 			@RequestParam(value = "full-name", defaultValue = "") String fullName,
 			@RequestParam(value = "first-name", defaultValue = "") String firstName,
 			@RequestParam(value = "last-name", defaultValue = "") String lastName, Pageable pageable) {
@@ -57,14 +58,14 @@ public class AuthorController {
 		if (!email.equals("") && !email.isBlank()) {
 			page = service.findByEmailPaginated(email, pageable);
 			if (!page.isEmpty()) {
-				return page;
+				return page.map(author -> new AuthorDTO(author));
 			}
 		}
 
 		if (!fullName.equals("") && !email.isBlank()) {
 			page = service.findByFullNamePageable(fullName, pageable);
 			if (!page.isEmpty()) {
-				return page;
+				return page.map(author -> new AuthorDTO(author));
 			}
 		}
 
@@ -72,7 +73,7 @@ public class AuthorController {
 		if (!firstName.equals("") && !email.isBlank()) {
 			page = service.findByFirstNamePaginated(firstName, pageable);
 			if (!page.isEmpty()) {
-				return page;
+				return page.map(author -> new AuthorDTO(author));
 			}
 		}
 
@@ -80,7 +81,7 @@ public class AuthorController {
 		if (!lastName.equals("") && !email.isBlank()) {
 			page = service.findByLastNamePaginated(lastName, pageable);
 			if (!page.isEmpty()) {
-				return page;
+				return page.map(author -> new AuthorDTO(author));
 			}
 		}
 
