@@ -40,9 +40,9 @@ public class CategoryController {
 	@GetMapping(value = "/search")
 	public Page<CategoryDTO> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
 		if (!name.equals("")) {
-			Page<Category> page = service.findByNamePaginated(name, pageable);
+			Page<CategoryDTO> page = service.findByNamePaginated(name, pageable);
 			if (!page.isEmpty()) {
-				return page.map(category -> new CategoryDTO(category));
+				return page;
 			}
 		}
 

@@ -39,8 +39,9 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public Page<Category> findByNamePaginated(String name, Pageable pageable) {
-		return categoryRepo.findByNameContainingIgnoreCase(name, pageable);
+	public Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable) {
+		Page<Category> page = categoryRepo.findByNameContainingIgnoreCase(name, pageable);
+		return this.convertPageToDTO(page);
 	}
 
 	@Override
