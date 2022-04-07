@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.services.AuthorService;
 
@@ -34,16 +33,7 @@ public class AuthorController {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<AuthorDTO> findById(@PathVariable String id) {
-		if (id == null)
-			throw new BadRequestException("Author ID must NOT be null.");
-
-		char[] digits = id.toCharArray();
-		for (char digit : digits) {
-			if (!Character.isDigit(digit))
-				throw new BadRequestException("Author ID must be a numeric value.");
-		}
-
-		AuthorDTO body = service.findByIdDTO(Long.parseLong(id));
+		AuthorDTO body = service.findByIdDTO(id);
 		return ResponseEntity.ok(body);
 	}
 
@@ -95,7 +85,7 @@ public class AuthorController {
 	}
 
 	@PutMapping(value = "/update-author/{id}")
-	public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody Author entity) {
+	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody Author entity) {
 		service.update(id, entity);
 		return ResponseEntity.ok().build();
 	}

@@ -14,9 +14,9 @@ public interface IAuthorService {
 
 	Page<AuthorDTO> findAll(Pageable pageable);
 
-	Author findById(Long id);
+	Author findById(String id);
 
-	AuthorDTO findByIdDTO(Long id);
+	AuthorDTO findByIdDTO(String id);
 
 	Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable);
 
@@ -30,5 +30,5 @@ public interface IAuthorService {
 
 	void add(Author entity);
 
-	void update(Long id, Author entity);
+	void update(String id, Author entity);
 }

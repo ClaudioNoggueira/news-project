@@ -43,13 +43,24 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
-	public Author findById(Long id) {
-		return authorRepo.findById(id)
-				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + id + "' not found."));
+	public Author findById(String id) {
+		if (id == null)
+			throw new BadRequestException("Author ID must NOT be null.");
+
+		char[] digits = id.toCharArray();
+		for (char digit : digits) {
+			if (!Character.isDigit(digit)) {
+				throw new BadRequestException("Author ID must be a numeric value.");
+			}
+		}
+
+		long author_id = Long.parseLong(id);
+		return authorRepo.findById(author_id)
+				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 	}
 
 	@Override
-	public AuthorDTO findByIdDTO(Long id) {
+	public AuthorDTO findByIdDTO(String id) {
 		Author author = this.findById(id);
 		return this.convertAuthorToDTO(author);
 	}
@@ -125,7 +136,7 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
-	public void update(Long id, Author entity) {
+	public void update(String id, Author entity) {
 		Author objToBeUpdated = this.findById(id);
 
 		if (entity.getEmail() != null && !entity.getEmail().equals("")) {
