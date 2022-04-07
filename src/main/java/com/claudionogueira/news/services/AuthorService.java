@@ -12,9 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.claudionogueira.news.dto.AuthorDTO;
+import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
+import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
 
@@ -114,9 +116,20 @@ public class AuthorService implements IAuthorService {
 		List<AuthorDTO> list = new ArrayList<>();
 
 		for (Author author : page) {
-			list.add(new AuthorDTO(author));
+			list.add(this.convertAuthorToDTO(author));
 		}
 
 		return new PageImpl<AuthorDTO>(list);
+	}
+
+	@Override
+	public AuthorDTO convertAuthorToDTO(Author author) {
+		AuthorDTO dto = new AuthorDTO(author);
+
+		for (News news : author.getAuthorNews()) {
+			dto.getNews().add(new NewsDTO(news));
+		}
+		
+		return dto;
 	}
 }

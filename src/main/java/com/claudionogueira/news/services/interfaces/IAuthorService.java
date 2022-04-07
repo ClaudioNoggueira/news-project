@@ -9,6 +9,8 @@ import com.claudionogueira.news.models.Author;
 public interface IAuthorService {
 	
 	Page<AuthorDTO> convertPageToDTO(Page<Author> page);
+	
+	AuthorDTO convertAuthorToDTO(Author author);
 
 	Page<AuthorDTO> findAll(Pageable pageable);
 
