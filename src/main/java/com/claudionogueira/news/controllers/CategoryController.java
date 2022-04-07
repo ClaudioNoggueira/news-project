@@ -37,7 +37,7 @@ public class CategoryController {
 		if (id == null)
 			throw new BadRequestException("Category ID must NOT be null.");
 
-		char[] digits = id.toString().toCharArray();
+		char[] digits = id.toCharArray();
 		for (char digit : digits) {
 			if (!Character.isDigit(digit))
 				throw new BadRequestException("Category ID must be a numeric value");

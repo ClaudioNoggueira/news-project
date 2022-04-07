@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.services.NewsService;
 
 @RestController
@@ -32,8 +33,17 @@ public class NewsController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<NewsDTO> findById(@PathVariable Long id) {
-		NewsDTO body = service.findByIdDTO(id);
+	public ResponseEntity<NewsDTO> findById(@PathVariable String id) {
+		if (id == null)
+			throw new BadRequestException("News ID must NOT be null.");
+
+		char[] digits = id.toCharArray();
+		for (char digit : digits) {
+			if (!Character.isDigit(digit))
+				throw new BadRequestException("News ID must be a numeric value");
+		}
+
+		NewsDTO body = service.findByIdDTO(Long.parseLong(id));
 		return ResponseEntity.ok(body);
 	}
 
