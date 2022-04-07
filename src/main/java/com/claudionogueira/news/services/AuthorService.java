@@ -87,8 +87,9 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
-	public Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable) {
-		return authorRepo.findByFirstNameContainingIgnoreCase(firstName, pageable);
+	public Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable) {
+		Page<Author> page = authorRepo.findByFirstNameContainingIgnoreCase(firstName, pageable);
+		return this.convertPageToDTO(page);
 	}
 
 	@Override

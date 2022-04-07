@@ -22,7 +22,7 @@ public interface IAuthorService {
 
 	Page<AuthorDTO> findByFullNamePageable(String fullName, Pageable pageable);
 
-	Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable);
+	Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable);
 
 	Page<Author> findByLastNamePaginated(String lastName, Pageable pageable);
 
