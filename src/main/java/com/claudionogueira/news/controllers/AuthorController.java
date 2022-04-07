@@ -33,7 +33,7 @@ public class AuthorController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Author> findById(@PathVariable String id) {
+	public ResponseEntity<AuthorDTO> findById(@PathVariable String id) {
 		if (id == null)
 			throw new BadRequestException("Author ID must NOT be null.");
 
@@ -43,7 +43,7 @@ public class AuthorController {
 				throw new BadRequestException("Author ID must be a numeric value.");
 		}
 
-		Author body = service.findById(Long.parseLong(id));
+		AuthorDTO body = service.findByIdDTO(Long.parseLong(id));
 		return ResponseEntity.ok(body);
 	}
 

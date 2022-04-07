@@ -3,7 +3,6 @@ package com.claudionogueira.news.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -37,8 +36,14 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public Author findById(Long id) {
-		Optional<Author> obj = repo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + id + "' not found."));
+		return repo.findById(id)
+				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + id + "' not found."));
+	}
+
+	@Override
+	public AuthorDTO findByIdDTO(Long id) {
+		Author author = this.findById(id);
+		return this.convertAuthorToDTO(author);
 	}
 
 	@Override
@@ -129,7 +134,7 @@ public class AuthorService implements IAuthorService {
 		for (News news : author.getAuthorNews()) {
 			dto.getNews().add(new NewsDTO(news));
 		}
-		
+
 		return dto;
 	}
 }

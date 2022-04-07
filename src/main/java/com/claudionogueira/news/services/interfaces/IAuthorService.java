@@ -15,6 +15,8 @@ public interface IAuthorService {
 	Page<AuthorDTO> findAll(Pageable pageable);
 
 	Author findById(Long id);
+	
+	AuthorDTO findByIdDTO(Long id);
 
 	Page<Author> findByEmailPaginated(String email, Pageable pageable);
 
