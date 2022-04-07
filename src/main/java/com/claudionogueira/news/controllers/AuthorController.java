@@ -63,9 +63,9 @@ public class AuthorController {
 
 		// Find authors by both first and last name
 		if (!fullName.equals("") && !email.isBlank()) {
-			Page<Author> page = service.findByFullNamePageable(fullName, pageable);
+			Page<AuthorDTO> page = service.findByFullNamePageable(fullName, pageable);
 			if (!page.isEmpty()) {
-				return page.map(author -> new AuthorDTO(author));
+				return page;
 			}
 		}
 

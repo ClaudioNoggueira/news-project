@@ -11,32 +11,40 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.claudionogueira.news.dto.AuthorDTO;
+import com.claudionogueira.news.dto.AuthorNewsDTO;
+import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
+import com.claudionogueira.news.models.Category;
+import com.claudionogueira.news.models.CategoryNews;
 import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
+import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
 
 @Service
 public class AuthorService implements IAuthorService {
 
-	private final AuthorRepo repo;
+	private final AuthorRepo authorRepo;
 
-	public AuthorService(AuthorRepo repo) {
-		this.repo = repo;
+	private final CategoryRepo categoryRepo;
+
+	public AuthorService(AuthorRepo repo, CategoryRepo categoryRepo) {
+		this.authorRepo = repo;
+		this.categoryRepo = categoryRepo;
 	}
 
 	@Override
 	public Page<AuthorDTO> findAll(Pageable pageable) {
-		Page<Author> page = repo.findAll(pageable);
+		Page<Author> page = authorRepo.findAll(pageable);
 		return this.convertPageToDTO(page);
 	}
 
 	@Override
 	public Author findById(Long id) {
-		return repo.findById(id)
+		return authorRepo.findById(id)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + id + "' not found."));
 	}
 
@@ -48,43 +56,49 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable) {
-		Page<Author> page = repo.findByEmailPaginated(email, pageable);
+		Page<Author> page = authorRepo.findByEmailPaginated(email, pageable);
 		return this.convertPageToDTO(page);
 	}
 
 	@Override
-	public Page<Author> findByFullNamePageable(String fullName, Pageable pageable) {
-		Page<Author> authorsByFirstName = repo.findByFirstNameContainingIgnoreCase(fullName, pageable);
-		Page<Author> authorsByLastName = repo.findByLastNameContainingIgnoreCase(fullName, pageable);
-
+	public Page<AuthorDTO> findByFullNamePageable(String fullName, Pageable pageable) {
 		Set<Author> set = new HashSet<>();
 
-		for (Author author : authorsByFirstName) {
+		// Page for both queries
+		Page<Author> page = Page.empty();
+
+		page = authorRepo.findByFirstNameContainingIgnoreCase(fullName, pageable);
+		for (Author author : page) {
 			set.add(author);
 		}
 
-		for (Author author : authorsByLastName) {
+		page = Page.empty();
+
+		page = authorRepo.findByLastNameContainingIgnoreCase(fullName, pageable);
+		for (Author author : page) {
 			set.add(author);
 		}
 
+		// Convert set to list
 		List<Author> list = new ArrayList<>(set);
-		Page<Author> page = new PageImpl<>(list);
-		return page;
+
+		// Create page out of list and convert to page of AuthorDTO
+		return this.convertPageToDTO(new PageImpl<>(list));
 	}
 
 	@Override
 	public Page<Author> findByFirstNamePaginated(String firstName, Pageable pageable) {
-		return repo.findByFirstNameContainingIgnoreCase(firstName, pageable);
+		return authorRepo.findByFirstNameContainingIgnoreCase(firstName, pageable);
 	}
 
 	@Override
 	public Page<Author> findByLastNamePaginated(String lastName, Pageable pageable) {
-		return repo.findByLastNameContainingIgnoreCase(lastName, pageable);
+		return authorRepo.findByLastNameContainingIgnoreCase(lastName, pageable);
 	}
 
 	@Override
 	public boolean doesTheEmailAlreadyExists(String email) {
-		Author obj = repo.findByEmail(email);
+		Author obj = authorRepo.findByEmail(email);
 		if (obj == null)
 			return false;
 
@@ -96,7 +110,7 @@ public class AuthorService implements IAuthorService {
 		if (this.doesTheEmailAlreadyExists(entity.getEmail()))
 			throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
 
-		repo.save(entity);
+		authorRepo.save(entity);
 	}
 
 	@Override
@@ -114,7 +128,7 @@ public class AuthorService implements IAuthorService {
 		if (!entity.getEmail().equals("") && entity.getEmail() != null)
 			objToBeUpdated.setEmail(entity.getEmail());
 
-		repo.save(objToBeUpdated);
+		authorRepo.save(objToBeUpdated);
 	}
 
 	@Override
@@ -130,12 +144,21 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public AuthorDTO convertAuthorToDTO(Author author) {
-		AuthorDTO dto = new AuthorDTO(author);
+		AuthorDTO authorDTO = new AuthorDTO(author);
 
 		for (News news : author.getAuthorNews()) {
-			dto.getNews().add(new NewsDTO(news));
-		}
+			NewsDTO newsDTO = new NewsDTO(news);
 
-		return dto;
+			for (CategoryNews categoryNews : news.getCategories()) {
+				long category_id = categoryNews.getId().getCategory().getId();
+
+				Category category = categoryRepo.findById(category_id).orElseThrow(
+						() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
+
+				newsDTO.getCategories().add(new CategoryDTO(category));
+			}
+			authorDTO.getNews().add(new AuthorNewsDTO(newsDTO));
+		}
+		return authorDTO;
 	}
 }
