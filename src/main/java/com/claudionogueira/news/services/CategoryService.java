@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.NewsNoCategoryDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
@@ -67,7 +68,7 @@ public class CategoryService implements ICategoryService {
 			News news = newsRepo.findById(news_id)
 					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 
-			dto.getNews().add(new NewsDTO(news));
+			dto.getNews().add(new NewsNoCategoryDTO(new NewsDTO(news)));
 		}
 
 		return dto;

@@ -12,7 +12,7 @@ public class CategoryDTO implements Serializable {
 	private Long id;
 	private String name;
 
-	private Set<NewsDTO> news = new HashSet<>();
+	private Set<NewsNoCategoryDTO> news = new HashSet<>();
 
 	public CategoryDTO() {
 
@@ -44,7 +44,7 @@ public class CategoryDTO implements Serializable {
 		this.name = name;
 	}
 
-	public Set<NewsDTO> getNews() {
+	public Set<NewsNoCategoryDTO> getNews() {
 		return news;
 	}
 }
