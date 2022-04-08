@@ -1,5 +1,6 @@
 package com.claudionogueira.news.services.utils;
 
+import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 
@@ -70,6 +71,19 @@ public class Check {
 		if (dto.getDate() == null || dto.getDate().toString().isEmpty() || dto.getDate().toString().isBlank()) {
 			throw new BadRequestException("Date is mandatory and cannot be null, empty or blank.");
 		}
+
+		return dto;
+	}
+
+	public static AuthorDTO authorDTO(AuthorDTO dto) {
+		if (dto.getEmail() == null || dto.getEmail().equals(""))
+			throw new BadRequestException("Email is mandatory and cannot be null, empty or blank.");
+
+		if (dto.getFirstName() == null || dto.getFirstName().equals(""))
+			throw new BadRequestException("First name is mandatory and cannot be null, empty or blank.");
+
+		if (dto.getLastName() == null || dto.getLastName().equals(""))
+			throw new BadRequestException("Last name is mandatory and cannot be null, empty or blank.");
 
 		return dto;
 	}
