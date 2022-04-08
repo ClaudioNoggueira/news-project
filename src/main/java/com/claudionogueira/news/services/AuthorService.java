@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.NewsNoAuthorDTO;
@@ -38,12 +39,14 @@ public class AuthorService implements IAuthorService {
 		this.categoryRepo = categoryRepo;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findAll(Pageable pageable) {
 		Page<Author> page = authorRepo.findAll(pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Author findById(String id) {
 		long author_id = Check.authorID(id);
@@ -51,18 +54,21 @@ public class AuthorService implements IAuthorService {
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public AuthorDTO findByIdDTO(String id) {
 		Author author = this.findById(id);
 		return this.convertAuthorToDTO(author);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable) {
 		Page<Author> page = authorRepo.findByEmailPaginated(email, pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findByFullNamePageable(String fullName, Pageable pageable) {
 		Set<Author> set = new HashSet<>();
@@ -89,12 +95,14 @@ public class AuthorService implements IAuthorService {
 		return this.convertPageToDTO(new PageImpl<>(list));
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable) {
 		Page<Author> page = authorRepo.findByFirstNameContainingIgnoreCase(firstName, pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findByLastNamePaginated(String lastName, Pageable pageable) {
 		Page<Author> page = authorRepo.findByLastNameContainingIgnoreCase(lastName, pageable);

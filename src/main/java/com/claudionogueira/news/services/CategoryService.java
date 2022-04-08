@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.NewsDTO;
@@ -33,18 +34,21 @@ public class CategoryService implements ICategoryService {
 		this.newsRepo = newsRepo;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<CategoryDTO> findAll(Pageable pageable) {
 		Page<Category> page = categoryRepo.findAll(pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable) {
 		Page<Category> page = categoryRepo.findByNameContainingIgnoreCase(name, pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Category findById(String id) {
 		long category_id = Check.categoryID(id);
@@ -52,6 +56,7 @@ public class CategoryService implements ICategoryService {
 				.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public CategoryDTO findByIdDTO(String id) {
 		Category category = this.findById(id);

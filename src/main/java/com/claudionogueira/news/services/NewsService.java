@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.CategoryNoNewsDTO;
@@ -45,18 +46,21 @@ public class NewsService implements INewsService {
 		this.categoryNewsRepo = categoryNewsRepo;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<NewsDTO> findAll(Pageable pageable) {
 		Page<News> page = newsRepo.findAll(pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<NewsDTO> findByTitlePaginated(String title, Pageable pageable) {
 		Page<News> page = newsRepo.findByTitleContainingIgnoreCase(title, pageable);
 		return this.convertPageToDTO(page);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public News findById(String id) {
 		long news_id = Check.newsID(id);
@@ -64,12 +68,14 @@ public class NewsService implements INewsService {
 				.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public NewsDTO findByIdDTO(String id) {
 		News news = this.findById(id);
 		return this.convertNewsToDTO(news);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<NewsDTO> findByAuthorName(String name, Pageable pageable) {
 		// All authors
@@ -145,6 +151,9 @@ public class NewsService implements INewsService {
 
 		// Check if any of the categories exists
 		for (CategoryNoNewsDTO obj : dto.getCategories()) {
+			
+			CategoryDTO categoryDTO = new CategoryDTO(Long.parseLong(obj.getId()), obj.getName());
+			obj = new CategoryNoNewsDTO(Check.categoryDTO(categoryDTO));
 			// If the category doesn't exists, create a new one
 			Category category = categoryRepo.findByNameIgnoreCase((obj.getName()));
 			if (category == null) {
