@@ -42,18 +42,22 @@ public class Check {
 	}
 
 	public static long categoryID(String id) {
-		if (id == null) {
-			throw new BadRequestException("Category ID is mandatory and cannot be null");
-		}
-
-		char[] digits = id.toCharArray();
-		for (char digit : digits) {
-			if (!Character.isDigit(digit)) {
-				throw new BadRequestException("Category ID has to be a numeric value.");
+		try {
+			char[] digits = id.toCharArray();
+			for (char digit : digits) {
+				if (!Character.isDigit(digit)) {
+					throw new BadRequestException("Category ID has to be a numeric value.");
+				}
 			}
-		}
 
-		return Long.parseLong(id);
+			return Long.parseLong(id);
+
+		} catch (NullPointerException e) {
+			throw new BadRequestException("Category ID is mandatory and cannot be null, empty or blank.");
+
+		} catch (NumberFormatException e) {
+			throw new BadRequestException("Category ID has to be a numeric value and cannot be null, empty or blank.");
+		}
 	}
 
 	public static NewsDTO newsDTO(NewsDTO dto) {
