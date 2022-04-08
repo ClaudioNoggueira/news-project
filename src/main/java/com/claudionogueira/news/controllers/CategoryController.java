@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.services.CategoryService;
 
 @RestController
@@ -41,23 +40,22 @@ public class CategoryController {
 	public Page<CategoryDTO> search(@RequestParam(value = "name", defaultValue = "") String name, Pageable pageable) {
 		if (!name.equals("") && !name.isBlank()) {
 			Page<CategoryDTO> page = service.findByNamePaginated(name, pageable);
-			if (!page.isEmpty()) {
+			if (!page.isEmpty())
 				return page;
-			}
 		}
 
 		return service.findAll(pageable);
 	}
 
 	@PostMapping(value = "/add-category")
-	public ResponseEntity<Void> add(@RequestBody Category entity) {
-		service.add(entity);
+	public ResponseEntity<Void> add(@RequestBody CategoryDTO dto) {
+		service.add(dto);
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping(value = "/update-category/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody Category entity) {
-		service.update(id, entity);
+	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody CategoryDTO dto) {
+		service.update(id, dto);
 		return ResponseEntity.ok().build();
 	}
 }

@@ -9,7 +9,7 @@ import com.claudionogueira.news.models.Category;
 public interface ICategoryService {
 
 	Page<CategoryDTO> convertPageToDTO(Page<Category> page);
-	
+
 	CategoryDTO convertCategoryToDTO(Category category);
 
 	boolean doesTheCategoryNameAlreadyExists(String name);
@@ -20,12 +20,12 @@ public interface ICategoryService {
 	Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable);
 
 	Category findById(String id);
-	
+
 	CategoryDTO findByIdDTO(String id);
 
 	// POST
-	void add(Category entity);
+	void add(CategoryDTO dto);
 
 	// PUT
-	void update(String id, Category entity);
+	void update(String id, CategoryDTO dto);
 }
