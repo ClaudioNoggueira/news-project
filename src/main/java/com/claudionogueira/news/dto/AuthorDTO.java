@@ -9,7 +9,7 @@ import com.claudionogueira.news.models.Author;
 public class AuthorDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	private String id;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -21,17 +21,17 @@ public class AuthorDTO implements Serializable {
 	}
 
 	public AuthorDTO(Author author) {
-		id = author.getId();
+		id = author.getId().toString();
 		firstName = author.getFirstName();
 		lastName = author.getLastName();
 		email = author.getEmail();
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
