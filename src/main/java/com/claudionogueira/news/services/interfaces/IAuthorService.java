@@ -30,8 +30,8 @@ public interface IAuthorService {
 	boolean doesTheEmailAlreadyExists(String email);
 
 	// POST
-	void add(Author entity);
+	void add(AuthorDTO dto);
 
 	// PUT
-	void update(String id, Author entity);
+	void update(String id, AuthorDTO dto);
 }

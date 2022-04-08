@@ -23,6 +23,7 @@ import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
+import com.claudionogueira.news.services.utils.Check;
 
 @Service
 public class AuthorService implements IAuthorService {
@@ -44,17 +45,7 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public Author findById(String id) {
-		if (id == null)
-			throw new BadRequestException("Author ID must NOT be null.");
-
-		char[] digits = id.toCharArray();
-		for (char digit : digits) {
-			if (!Character.isDigit(digit)) {
-				throw new BadRequestException("Author ID must be a numeric value.");
-			}
-		}
-
-		long author_id = Long.parseLong(id);
+		long author_id = Check.authorID(id);
 		return authorRepo.findById(author_id)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 	}
@@ -115,42 +106,31 @@ public class AuthorService implements IAuthorService {
 		if (obj == null)
 			return false;
 
-		return true;
+		throw new BadRequestException("Email '" + email + "' already in use.");
 	}
 
 	@Override
-	public void add(Author entity) {
-		if (entity.getEmail() == null || entity.getEmail().equals(""))
-			throw new BadRequestException("Email is mandatory and cannot be null, empty or blank.");
+	public void add(AuthorDTO dto) {
+		dto = Check.authorDTO(dto);
 
-		if (entity.getFirstName() == null || entity.getFirstName().equals(""))
-			throw new BadRequestException("First name is mandatory and cannot be null, empty or blank.");
-
-		if (entity.getLastName() == null || entity.getLastName().equals(""))
-			throw new BadRequestException("Last name is mandatory and cannot be null, empty or blank.");
-
-		if (this.doesTheEmailAlreadyExists(entity.getEmail()))
-			throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
-
-		authorRepo.save(entity);
+		if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
+			authorRepo.save(new Author(null, dto.getFirstName(), dto.getLastName(), dto.getEmail()));
 	}
 
 	@Override
-	public void update(String id, Author entity) {
+	public void update(String id, AuthorDTO dto) {
 		Author objToBeUpdated = this.findById(id);
 
-		if (entity.getEmail() != null && !entity.getEmail().equals("")) {
-			if (this.doesTheEmailAlreadyExists(entity.getEmail()))
-				throw new BadRequestException("Email '" + entity.getEmail() + "' already in use.");
-
-			objToBeUpdated.setEmail(entity.getEmail());
+		if (dto.getEmail() != null && !dto.getEmail().equals("")) {
+			if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
+				objToBeUpdated.setEmail(dto.getEmail());
 		}
 
-		if (entity.getFirstName() != null && !entity.getFirstName().equals(""))
-			objToBeUpdated.setFirstName(entity.getFirstName());
+		if (dto.getFirstName() != null && !dto.getFirstName().equals(""))
+			objToBeUpdated.setFirstName(dto.getFirstName());
 
-		if (entity.getLastName() != null && !entity.getLastName().equals(""))
-			objToBeUpdated.setLastName(entity.getLastName());
+		if (dto.getLastName() != null && !dto.getLastName().equals(""))
+			objToBeUpdated.setLastName(dto.getLastName());
 
 		authorRepo.save(objToBeUpdated);
 	}

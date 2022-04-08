@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.services.AuthorService;
 
 @RestController
@@ -79,14 +78,14 @@ public class AuthorController {
 	}
 
 	@PostMapping(value = "/add-author")
-	public ResponseEntity<Void> add(@RequestBody Author entity) {
-		service.add(entity);
+	public ResponseEntity<Void> add(@RequestBody AuthorDTO dto) {
+		service.add(dto);
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping(value = "/update-author/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody Author entity) {
-		service.update(id, entity);
+	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody AuthorDTO dto) {
+		service.update(id, dto);
 		return ResponseEntity.ok().build();
 	}
 }
