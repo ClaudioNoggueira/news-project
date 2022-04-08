@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.services.CategoryService;
 
@@ -34,15 +33,6 @@ public class CategoryController {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<CategoryDTO> findById(@PathVariable String id) {
-		if (id == null)
-			throw new BadRequestException("Category ID must NOT be null.");
-
-		char[] digits = id.toCharArray();
-		for (char digit : digits) {
-			if (!Character.isDigit(digit))
-				throw new BadRequestException("Category ID must be a numeric value");
-		}
-
 		CategoryDTO dto = service.findByIdDTO(id);
 		return ResponseEntity.ok(dto);
 	}
