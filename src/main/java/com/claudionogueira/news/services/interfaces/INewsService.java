@@ -13,9 +13,9 @@ public interface INewsService {
 	Page<NewsDTO> convertPageToDTO(Page<News> page);
 
 	// GET
-	News findById(Long id);
+	News findById(String id);
 
-	NewsDTO findByIdDTO(Long id);
+	NewsDTO findByIdDTO(String id);
 
 	Page<NewsDTO> findAll(Pageable pageable);
 
@@ -27,8 +27,8 @@ public interface INewsService {
 	void add(NewsDTO dto);
 
 	// PUT
-	void update(Long id, NewsDTO dto);
+	void update(String id, NewsDTO dto);
 
 	// DELETE
-	void delete(Long id);
+	void delete(String id);
 }

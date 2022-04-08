@@ -3,7 +3,6 @@ package com.claudionogueira.news.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -24,6 +23,7 @@ import com.claudionogueira.news.repositories.CategoryNewsRepo;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.INewsService;
+import com.claudionogueira.news.services.utils.Check;
 
 @Service
 public class NewsService implements INewsService {
@@ -57,13 +57,14 @@ public class NewsService implements INewsService {
 	}
 
 	@Override
-	public News findById(Long id) {
-		Optional<News> obj = newsRepo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + id + "' not found."));
+	public News findById(String id) {
+		long news_id = Check.newsID(id);
+		return newsRepo.findById(news_id)
+				.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 	}
 
 	@Override
-	public NewsDTO findByIdDTO(Long id) {
+	public NewsDTO findByIdDTO(String id) {
 		News news = this.findById(id);
 		return this.convertNewsToDTO(news);
 	}
@@ -133,6 +134,14 @@ public class NewsService implements INewsService {
 
 	@Override
 	public void add(NewsDTO dto) {
+
+		dto = Check.newsDTO(dto);
+
+		// Check if author with the id exists or throw exception
+		long author_id = Long.parseLong(dto.getAuthor().getId());
+		Author author = authorRepo.findById(author_id)
+				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+
 		// Check if any of the categories exists
 		for (CategoryDTO obj : dto.getCategories()) {
 			// If the category doesn't exists, create a new one
@@ -143,34 +152,20 @@ public class NewsService implements INewsService {
 			}
 		}
 
-		// Check if author with the id exists or throw exception
-		Long author_id = dto.getAuthor().getId();
-		if (author_id != null) {
-			Author author = authorRepo.findById(author_id)
-					.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+		News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
+		news = newsRepo.saveAndFlush(news);
 
-			if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
-				if (dto.getContent() != null && !dto.getContent().isEmpty()) {
-					if (dto.getDate() != null) {
-						News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
-						news = newsRepo.saveAndFlush(news);
-
-						// Save categories of the new news
-						for (CategoryDTO obj : dto.getCategories()) {
-							Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
-							categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
-						}
-					}
-				}
-			}
+		// Save categories of the new news
+		for (CategoryDTO obj : dto.getCategories()) {
+			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
 	}
 
 	@Override
-	public void update(Long id, NewsDTO dto) {
+	public void update(String id, NewsDTO dto) {
 		// GET news to be updated by id or throw exception
-		News newsToBeUpdated = newsRepo.findById(id)
-				.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + id + "' not found."));
+		News newsToBeUpdated = this.findById(id);
 
 		// Check if categories already exists or save a new one
 		for (CategoryDTO obj : dto.getCategories()) {
@@ -182,12 +177,10 @@ public class NewsService implements INewsService {
 		}
 
 		// GET author by id or throw exception
-		Long author_id = dto.getAuthor().getId();
-		if (author_id != null) {
-			Author author = authorRepo.findById(author_id)
-					.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
-			newsToBeUpdated.setAuthor(author);
-		}
+		long author_id = Check.authorID(dto.getAuthor().getId());
+		Author author = authorRepo.findById(author_id)
+				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+		newsToBeUpdated.setAuthor(author);
 
 		if (dto.getTitle() != null && !dto.getTitle().isEmpty())
 			newsToBeUpdated.setTitle(dto.getTitle());
@@ -203,6 +196,7 @@ public class NewsService implements INewsService {
 			for (CategoryNews entity : newsToBeUpdated.getCategories()) {
 				categoryNewsRepo.delete(entity);
 			}
+
 			newsToBeUpdated.getCategories().clear();
 
 			// Save all new categories of news
@@ -212,11 +206,11 @@ public class NewsService implements INewsService {
 			}
 		}
 
-		newsToBeUpdated = newsRepo.saveAndFlush(newsToBeUpdated);
+		newsRepo.saveAndFlush(newsToBeUpdated);
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(String id) {
 		News newsToBeDeleted = this.findById(id);
 
 		// DELETE all related rows in TB_CATEGORY_NEWS

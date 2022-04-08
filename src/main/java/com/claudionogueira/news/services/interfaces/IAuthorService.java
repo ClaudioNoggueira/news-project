@@ -12,6 +12,7 @@ public interface IAuthorService {
 
 	AuthorDTO convertAuthorToDTO(Author author);
 
+	// GET
 	Page<AuthorDTO> findAll(Pageable pageable);
 
 	Author findById(String id);
@@ -28,7 +29,9 @@ public interface IAuthorService {
 
 	boolean doesTheEmailAlreadyExists(String email);
 
+	// POST
 	void add(Author entity);
 
+	// PUT
 	void update(String id, Author entity);
 }
