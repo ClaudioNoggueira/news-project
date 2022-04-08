@@ -1,6 +1,7 @@
 package com.claudionogueira.news.services.utils;
 
 import com.claudionogueira.news.dto.AuthorDTO;
+import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 
@@ -88,6 +89,13 @@ public class Check {
 
 		if (dto.getLastName() == null || dto.getLastName().equals(""))
 			throw new BadRequestException("Last name is mandatory and cannot be null, empty or blank.");
+
+		return dto;
+	}
+
+	public static CategoryDTO categoryDTO(CategoryDTO dto) {
+		if (dto.getName() == null || dto.getName().isEmpty() || dto.getName().isBlank())
+			throw new BadRequestException("Category name is mandatory and cannot be null, empty or blank.");
 
 		return dto;
 	}
