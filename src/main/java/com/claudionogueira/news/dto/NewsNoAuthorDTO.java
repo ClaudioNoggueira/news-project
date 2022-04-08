@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AuthorNewsDTO implements Serializable {
+public class NewsNoAuthorDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -13,11 +13,11 @@ public class AuthorNewsDTO implements Serializable {
 
 	private Set<CategoryNoNewsDTO> categories = new HashSet<>();
 
-	public AuthorNewsDTO() {
+	public NewsNoAuthorDTO() {
 
 	}
 
-	public AuthorNewsDTO(NewsDTO news) {
+	public NewsNoAuthorDTO(NewsDTO news) {
 		id = news.getId();
 		title = news.getTitle();
 		content = news.getContent();

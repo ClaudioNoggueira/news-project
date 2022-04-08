@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.dto.AuthorNewsDTO;
+import com.claudionogueira.news.dto.NewsNoAuthorDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
@@ -162,7 +162,7 @@ public class AuthorService implements IAuthorService {
 
 				newsDTO.getCategories().add(new CategoryNoNewsDTO(new CategoryDTO(category)));
 			}
-			authorDTO.getNews().add(new AuthorNewsDTO(newsDTO));
+			authorDTO.getNews().add(new NewsNoAuthorDTO(newsDTO));
 		}
 		return authorDTO;
 	}

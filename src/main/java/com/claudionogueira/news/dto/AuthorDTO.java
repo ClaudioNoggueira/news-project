@@ -14,7 +14,7 @@ public class AuthorDTO implements Serializable {
 	private String lastName;
 	private String email;
 
-	private Set<AuthorNewsDTO> news = new HashSet<>();
+	private Set<NewsNoAuthorDTO> news = new HashSet<>();
 
 	public AuthorDTO() {
 
@@ -59,7 +59,7 @@ public class AuthorDTO implements Serializable {
 		this.email = email;
 	}
 
-	public Set<AuthorNewsDTO> getNews() {
+	public Set<NewsNoAuthorDTO> getNews() {
 		return news;
 	}
 }
