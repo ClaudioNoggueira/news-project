@@ -11,7 +11,7 @@ public class AuthorNewsDTO implements Serializable {
 	private String title;
 	private String content;
 
-	private Set<CategoryDTO> categories = new HashSet<>();
+	private Set<CategoryNoNewsDTO> categories = new HashSet<>();
 
 	public AuthorNewsDTO() {
 
@@ -48,7 +48,7 @@ public class AuthorNewsDTO implements Serializable {
 		this.content = content;
 	}
 
-	public Set<CategoryDTO> getCategories() {
+	public Set<CategoryNoNewsDTO> getCategories() {
 		return categories;
 	}
 }

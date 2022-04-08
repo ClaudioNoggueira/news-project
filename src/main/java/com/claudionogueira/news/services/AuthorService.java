@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.AuthorNewsDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
@@ -159,7 +160,7 @@ public class AuthorService implements IAuthorService {
 				Category category = categoryRepo.findById(category_id).orElseThrow(
 						() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 
-				newsDTO.getCategories().add(new CategoryDTO(category));
+				newsDTO.getCategories().add(new CategoryNoNewsDTO(new CategoryDTO(category)));
 			}
 			authorDTO.getNews().add(new AuthorNewsDTO(newsDTO));
 		}

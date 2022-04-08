@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
@@ -111,10 +112,10 @@ public class NewsService implements INewsService {
 			Category category = categoryRepo.findById(category_id).orElseThrow(
 					() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 
-			// Converting to CategoryDTO
-			CategoryDTO categoryDTO = new CategoryDTO(category);
+			// Converting to CategoryNoNewsDTO
+			CategoryNoNewsDTO categoryDTO = new CategoryNoNewsDTO(new CategoryDTO(category));
 
-			// Add categoryDTO to NewsDTO' Set<CategoryDTO> categories
+			// Add categoryDTO to NewsDTO' Set<CategoryNoNewsDTO> categories
 			dto.getCategories().add(categoryDTO);
 		}
 
@@ -143,7 +144,7 @@ public class NewsService implements INewsService {
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 
 		// Check if any of the categories exists
-		for (CategoryDTO obj : dto.getCategories()) {
+		for (CategoryNoNewsDTO obj : dto.getCategories()) {
 			// If the category doesn't exists, create a new one
 			Category category = categoryRepo.findByNameIgnoreCase((obj.getName()));
 			if (category == null) {
@@ -156,7 +157,7 @@ public class NewsService implements INewsService {
 		news = newsRepo.saveAndFlush(news);
 
 		// Save categories of the new news
-		for (CategoryDTO obj : dto.getCategories()) {
+		for (CategoryNoNewsDTO obj : dto.getCategories()) {
 			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
 			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
@@ -168,7 +169,7 @@ public class NewsService implements INewsService {
 		News newsToBeUpdated = this.findById(id);
 
 		// Check if categories already exists or save a new one
-		for (CategoryDTO obj : dto.getCategories()) {
+		for (CategoryNoNewsDTO obj : dto.getCategories()) {
 			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
 			if (category == null) {
 				category = new Category(null, obj.getName());
@@ -200,7 +201,7 @@ public class NewsService implements INewsService {
 			newsToBeUpdated.getCategories().clear();
 
 			// Save all new categories of news
-			for (CategoryDTO obj : dto.getCategories()) {
+			for (CategoryNoNewsDTO obj : dto.getCategories()) {
 				Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
 				categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, newsToBeUpdated)));
 			}

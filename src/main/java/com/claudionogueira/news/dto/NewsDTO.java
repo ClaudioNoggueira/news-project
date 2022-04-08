@@ -19,7 +19,7 @@ public class NewsDTO implements Serializable {
 	private LocalDate date;
 	private AuthorDTO authorDTO;
 
-	private Set<CategoryDTO> categories = new HashSet<>();
+	private Set<CategoryNoNewsDTO> categories = new HashSet<>();
 
 	public NewsDTO() {
 
@@ -73,7 +73,7 @@ public class NewsDTO implements Serializable {
 		this.authorDTO = author;
 	}
 
-	public Set<CategoryDTO> getCategories() {
+	public Set<CategoryNoNewsDTO> getCategories() {
 		return categories;
 	}
 }
