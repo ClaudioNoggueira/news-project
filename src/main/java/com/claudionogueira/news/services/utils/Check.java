@@ -22,18 +22,22 @@ public class Check {
 	}
 
 	public static long authorID(String id) {
-		if (id == null) {
-			throw new BadRequestException("Author ID is mandatory and cannot be null");
-		}
-
-		char[] digits = id.toCharArray();
-		for (char digit : digits) {
-			if (!Character.isDigit(digit)) {
-				throw new BadRequestException("Author ID has to be a numeric value.");
+		try {
+			char[] digits = id.toCharArray();
+			for (char digit : digits) {
+				if (!Character.isDigit(digit)) {
+					throw new BadRequestException("Author ID has to be a numeric value.");
+				}
 			}
-		}
 
-		return Long.parseLong(id);
+			return Long.parseLong(id);
+
+		} catch (NullPointerException e) {
+			throw new BadRequestException("Author ID is mandatory and cannot be null, empty or blank.");
+
+		} catch (NumberFormatException e) {
+			throw new BadRequestException("Author ID has to be a numeric value and cannot be null, empty or blank.");
+		}
 	}
 
 	public static long categoryID(String id) {
@@ -52,7 +56,6 @@ public class Check {
 	}
 
 	public static NewsDTO newsDTO(NewsDTO dto) {
-		Check.newsID(dto.getId().toString());
 
 		Check.authorID(dto.getAuthor().getId().toString());
 
