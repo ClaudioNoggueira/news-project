@@ -1,8 +1,11 @@
 package com.claudionogueira.news.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class NewsNoAuthorDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -10,6 +13,9 @@ public class NewsNoAuthorDTO implements Serializable {
 	private Long id;
 	private String title;
 	private String content;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+	private LocalDate date;
 
 	private Set<CategoryNoNewsDTO> categories = new HashSet<>();
 
@@ -21,6 +27,7 @@ public class NewsNoAuthorDTO implements Serializable {
 		id = news.getId();
 		title = news.getTitle();
 		content = news.getContent();
+		date = news.getDate();
 		categories.addAll(news.getCategories());
 	}
 
@@ -46,6 +53,14 @@ public class NewsNoAuthorDTO implements Serializable {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
 	}
 
 	public Set<CategoryNoNewsDTO> getCategories() {
