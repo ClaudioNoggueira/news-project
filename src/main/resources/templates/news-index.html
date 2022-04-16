@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News</title>
+
+<!-- static stylesheet -->
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+
+	<header class="main-header flex-container">
+		<h1>NEWS</h1>
+
+		<form action="#" method="post">
+			<input type="text" name="search-box" id="" class="search-box"
+				placeholder="Search news">
+			<button type="submit" class="search-button">Search</button>
+		</form>
+	</header>
+
+	<main class="main-container">
+
+		<div class="grid-container">
+
+			<aside>
+				<a href="#">Authors</a> <a href="#">Categories</a> <a href="#">News</a>
+			</aside>
+
+			<main>
+				<div class="news-card" th:each="news : ${allNews}">
+					<header class="news-header flex-container">
+						<h2 class="news-title">
+							<span th:text="${news.title}"></span>
+						</h2>
+						<h4 class="news-date">
+							<span th:text="${news.date}"></span>
+						</h4>
+					</header>
+					<main class="news-body">
+						<p class="news-content">
+							<span th:utext="${#strings.abbreviate(news.content, 400)}"></span>
+						</p>
+					</main>
+					<footer class="news-footer flex-container">
+						<ul class="news-categories">
+							<li class="news-category" th:each="category : ${news.categories}"><span
+								th:text="${category.name}"></span></li>
+						</ul>
+
+						<h3 class="news-author">
+							<span th:text="${news.author.firstName}"></span> <span> </span> <span
+								th:text="${news.author.lastName}"></span>
+						</h3>
+					</footer>
+
+				</div>
+			</main>
+		</div>
+	</main>
+
+	<footer class="main-footer">
+		<p>
+			Developed by <a href="https://github.com/ClaudioNoggueira">Claudio
+				V. Nogueira</a>
+		</p>
+	</footer>
+</body>
+
+</html>
