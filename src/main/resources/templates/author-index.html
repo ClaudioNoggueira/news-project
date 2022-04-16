@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thmeleaf.org">
 
+
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,11 +15,11 @@
 <body>
 
 	<header class="main-header flex-container">
-		<h1>NEWS</h1>
+		<h1>AUTHORS</h1>
 
 		<form action="#" method="post">
 			<input type="text" name="search-box" id="" class="search-box"
-				placeholder="Search news">
+				placeholder="Search authors">
 			<button type="submit" class="search-button">Search</button>
 		</form>
 	</header>
@@ -33,33 +34,25 @@
 			</aside>
 
 			<main>
-				<div class="news-card" th:each="news : ${allNews}">
-					<header class="news-header flex-container">
-						<h2 class="news-title">
-							<span th:text="${news.title}"></span>
+
+				<div class="author-card" th:each="author : ${authors}">
+					<section class="author-header">
+						<h2 class="author-name">
+							<span th:text="${author.firstName}"></span> <span> </span> <span
+								th:text="${author.lastName}"></span>
 						</h2>
-						<h4 class="news-date">
-							<span th:text="${news.date}"></span>
-						</h4>
-					</header>
-					<main class="news-body">
-						<p class="news-content">
-							<span th:utext="${#strings.abbreviate(news.content, 400)}"></span>
-						</p>
-					</main>
-					<footer class="news-footer flex-container">
-						<ul class="news-categories">
-							<li class="news-category" th:each="category : ${news.categories}"><span
-								th:text="${category.name}"></span></li>
-						</ul>
-
-						<h3 class="news-author">
-							<span th:text="${news.author.firstName}"></span> <span> </span> <span
-								th:text="${news.author.lastName}"></span>
+						<h3 class="author-email">
+							<span th:text="${author.email}"></span>
 						</h3>
-					</footer>
-
+					</section>
+					<section class="author-body">
+						<ul class="author-news">
+							<li class="news flex-container" th:each="news : ${author.news}"><span
+								th:text="${news.title}"></span> <span th:text="${news.date}"></span></li>
+						</ul>
+					</section>
 				</div>
+
 			</main>
 		</div>
 	</main>
