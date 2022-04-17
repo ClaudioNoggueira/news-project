@@ -29,13 +29,26 @@
 		<div class="grid-container">
 
 			<aside>
-				<a href="/authors">Authors</a> <a href="#">Categories</a> <a
-					href="/news">News</a>
+				<details>
+					<summary>AUTHORS</summary>
+					<a href="/authors">See all authors</a>
+					<a href="#">Add author</a>
+				</details>
+				<details>
+					<summary>CATEGORIES</summary>
+					<a href="/categories">See all categories</a>
+					<a href="#">Add category</a>
+				</details>
+				<details>
+					<summary>NEWS</summary>
+					<a href="/news">See all news</a>
+					<a href="#">Add news</a>
+				</details>
 			</aside>
 
 			<main>
 
-				<div class="author-card" th:each="author : ${authors}">
+				<div class="card" th:each="author : ${authors}">
 					<section class="author-header">
 						<h2 class="author-name">
 							<span th:text="${author.firstName}"></span> <span> </span> <span
