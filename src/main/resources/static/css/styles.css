@@ -128,22 +128,7 @@ footer {
 	text-align: center;
 }
 
-/* //////////////////// NEWS ////////////////////*/
-.news-categories {
-	align-items: flex-start;
-	display: flex;
-	gap: 15px;
-}
-
-.news-body {
-	text-align: justify;
-}
-
-.news-footer {
-	margin-top: 15px;
-}
-
-/* /////////////////// AUTHOR ///////////////////// */
+/* /////////////////// FORMS ///////////////////// */
 .add-label {
 	display: inline-block;
 	font-size: 1rem;
@@ -186,4 +171,19 @@ footer {
 	font-weight: 600;
 	margin-bottom: 15px;
 	width: 100%;
+}
+
+/* //////////////////// NEWS ////////////////////*/
+.news-categories {
+	align-items: flex-start;
+	display: flex;
+	gap: 15px;
+}
+
+.news-body {
+	text-align: justify;
+}
+
+.news-footer {
+	margin-top: 15px;
 }

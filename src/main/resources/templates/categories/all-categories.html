@@ -28,6 +28,7 @@
 								th:text="${news.title}"></span><span th:text="${news.date}"></span>
 							</li>
 						</ul>
+						<span th:if="${category.news.isEmpty()}">No news</span>
 					</section>
 				</div>
 

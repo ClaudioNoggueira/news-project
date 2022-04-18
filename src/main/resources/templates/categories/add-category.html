@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmeleaf.org">
+
+<div th:insert="@partials/head :: head"></div>
+
+<body>
+
+	<div th:replace="@partials/header :: formField(h1='category', placeholder='Search category')"></div>
+
+	<main class="main-container">
+
+		<div class="grid-container">
+
+			<div th:insert="@partials/aside :: aside"></div>
+
+			<div class="main-content">
+
+				<form th:action="@{/categories/add-category}" method="POST" th:object="${category}">
+					<label class="add-label" for="name">CATEGORY NAME:</label>
+					<input class="add-input" type="text" name="name" id="name" placeholder="Type the category name..." th:field="*{name}" pattern="[a-zA-Z ]*" required>
+					<div class="alert" role="alert" th:text="${error}" th:if="${error}"></div>
+
+					<button type="submit" value="Submit" class="submit-button">INSERT CATEGORY</button>
+				</form>
+				
+			</div>
+		</div>
+	</main>
+
+	<div th:insert="@partials/footer :: footer"></div>
+</body>
+
+</html>
