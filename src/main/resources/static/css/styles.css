@@ -88,7 +88,7 @@ aside a:link{
     margin-left: 15px;
 }
 
-main{
+.main-content{
     margin-top: -5px;
     grid-column: 2 /-1;
 }

@@ -1,0 +1,9 @@
+<header class="main-header flex-container" th:fragment="formField (h1, placeholder)">
+	<h1 th:text="${#strings.toUpperCase(h1)}"></h1>
+
+	<form action="#" method="post">
+		<input type="text" name="search-box" id="" class="search-box"
+			th:placeholder="${placeholder}">
+		<button type="submit" class="search-button">Search</button>
+	</form>
+</header>
