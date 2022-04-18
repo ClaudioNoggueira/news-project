@@ -17,10 +17,10 @@ public class NewsView {
 	public NewsView(NewsService service) {
 		this.service = service;
 	}
-	
+
 	@GetMapping(value = "/news")
 	public ModelAndView getNews(Pageable pageable) {
-		ModelAndView mv = new ModelAndView("news-index");
+		ModelAndView mv = new ModelAndView("news/all-news");
 		Page<NewsDTO> news = service.findAll(pageable);
 		mv.addObject("allNews", news);
 		return mv;

@@ -17,10 +17,10 @@ public class CategoryView {
 	public CategoryView(CategoryService service) {
 		this.service = service;
 	}
-	
+
 	@GetMapping(value = "/categories")
 	public ModelAndView getCategories(Pageable pageable) {
-		ModelAndView mv = new ModelAndView("category-index");
+		ModelAndView mv = new ModelAndView("categories/all-categories");
 		Page<CategoryDTO> categories = service.findAll(pageable);
 		mv.addObject("categories", categories);
 		return mv;

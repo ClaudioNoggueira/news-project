@@ -47,20 +47,20 @@
 
 			<main>
 				<div class="card" th:each="news : ${allNews}">
-					<header class="news-header flex-container">
+					<section class="news-header flex-container">
 						<h2 class="news-title">
 							<span th:text="${news.title}"></span>
 						</h2>
 						<h4 class="news-date">
 							<span th:text="${news.date}"></span>
 						</h4>
-					</header>
-					<main class="news-body">
+					</section>
+					<section class="news-body">
 						<p class="news-content">
 							<span th:utext="${#strings.abbreviate(news.content, 400)}"></span>
 						</p>
-					</main>
-					<footer class="news-footer flex-container">
+					</section>
+					<section class="news-footer flex-container">
 						<ul class="news-categories">
 							<li class="news-category" th:each="category : ${news.categories}"><span
 								th:text="${category.name}"></span></li>
@@ -70,7 +70,7 @@
 							<span th:text="${news.author.firstName}"></span> <span> </span> <span
 								th:text="${news.author.lastName}"></span>
 						</h3>
-					</footer>
+					</section>
 
 				</div>
 			</main>

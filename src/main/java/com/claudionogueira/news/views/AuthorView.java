@@ -17,10 +17,10 @@ public class AuthorView {
 	public AuthorView(AuthorService service) {
 		this.service = service;
 	}
-	
+
 	@GetMapping(value = "/authors")
-	public ModelAndView getAuthors(Pageable pageable){
-		ModelAndView mv = new ModelAndView("author-index");
+	public ModelAndView getAuthors(Pageable pageable) {
+		ModelAndView mv = new ModelAndView("authors/all-authors");
 		Page<AuthorDTO> authors = service.findAll(pageable);
 		mv.addObject("authors", authors);
 		return mv;
