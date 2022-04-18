@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.claudionogueira.news.dto.AuthorDTO;
@@ -31,10 +30,9 @@ public class AuthorView {
 	}
 
 	@GetMapping(value = "/authors/add-author")
-	public ModelAndView getAddAuthor() {
-		ModelAndView mv = new ModelAndView("authors/add-author");
-		mv.addObject("author", new AuthorDTO());
-		return mv;
+	public String getAddAuthor(Model model) {
+		model.addAttribute("author", new AuthorDTO());
+		return "authors/add-author";
 	}
 
 	@PostMapping(value = "/authors/add-author")
