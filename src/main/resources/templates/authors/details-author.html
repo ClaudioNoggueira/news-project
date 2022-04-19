@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmeleaf.org">
+
+<div th:insert="@partials/head :: head"></div>
+
+<body>
+
+	<div th:replace="@partials/header :: formField(h1='authors', placeholder='Search authors')"></div>
+
+	<main class="main-container">
+
+		<div class="grid-container">
+
+			<div th:insert="@partials/aside :: aside"></div>
+
+			<div class="main-content">
+			
+				<div class="buttons-container">
+					<a th:href="@{/authors/edit-author/{id}(id=${author.id})}">
+						<button class="button">
+							<i class="uil uil-edit-alt"></i> EDIT
+						</button>
+					</a>
+					
+					<a th:href="@{/authors/{id}(id=${author.id})}">
+						<button class="button">
+							<i class="uil uil-trash"></i> DELETE
+						</button>
+					</a>
+				</div>
+			
+				<div class="card" th:object="${author}">
+					<section class="author-header">
+						<h2 class="author-name">
+							<span th:text="*{firstName}"></span>
+							<span> </span>
+							<span th:text="*{lastName}"></span>
+						</h2>
+						<h3 class="author-email">
+							<span th:text="*{email}"></span>
+						</h3>
+					</section>
+					<section class="author-body">
+						<ul class="author-news">
+							<li class="news flex-container" th:each="news : ${author.news}">
+								<span th:text="${news.title}"></span> <span
+								th:text="${news.date}"></span>
+							</li>
+						</ul>
+						<span th:if="${author.news.isEmpty()}">No news</span>
+					</section>
+				</div>
+
+			</div>
+		</div>
+	</main>
+
+	<div th:insert="@partials/footer :: footer"></div>
+</body>
+
+</html>
