@@ -5,8 +5,7 @@
 
 <body>
 
-	<div
-		th:replace="@partials/header :: formField(h1='news', placeholder='Search news')"></div>
+	<div th:replace="@partials/header :: formField(h1='news', placeholder='Search news')"></div>
 
 	<main class="main-container">
 
@@ -26,7 +25,7 @@
 					</section>
 					<section class="news-body">
 						<p class="news-content">
-							<span th:utext="${#strings.abbreviate(news.content, 400)}"></span>
+							<span th:utext="${#strings.abbreviate(news.content, 300)}"></span>
 						</p>
 					</section>
 					<section class="news-footer flex-container">
