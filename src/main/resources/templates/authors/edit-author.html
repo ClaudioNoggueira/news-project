@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmeleaf.org">
+
+<div th:insert="@partials/head :: head"></div>
+
+<body>
+	
+	<div th:replace="@partials/header :: formField(h1='authors', placeholder='Search authors')"></div>
+
+	<main class="main-container">
+
+		<div class="grid-container">
+
+			<div th:insert="@partials/aside :: aside"></div>
+
+			<div class="main-content">
+
+				<form th:action="@{/authors/edit-author/{id}(id=${author.id})}" method="post" th:object="${author}">
+					<label class="add-label" for="firstname">FIRST	NAME:</label>
+					<input class="add-input" type="text" name="firstname" id="firstname" placeholder="Type author's first name..." th:field="*{firstName}" pattern="[a-zA-Z ]*" required>
+					
+					<label class="add-label" for="lastname">LAST NAME:</label>
+					<input class="add-input" type="text" name="lastname" id="lastname" placeholder="Type author's last name..." th:field="*{lastName}" pattern="[a-zA-Z]*" required>
+					
+					<label class="add-label" for="email">EMAIL:</label>
+					<input class="add-input" type="email" name="email" id="email" placeholder="Type author's email..." th:field="*{email}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+
+					<button type="submit" value="Submit" class="submit-button">EDIT AUTHOR</button>
+				</form>
+				
+				<div class="alert" role="alert" th:text="${error}" th:if="${error}"></div>
+			</div>
+		</div>
+	</main>
+
+	<div th:insert="@partials/footer :: footer"></div>
+</body>
+
+</html>
