@@ -5,8 +5,7 @@
 
 <body>
 
-	<div
-		th:replace="@partials/header :: formField(h1='categories', placeholder='Search categories')"></div>
+	<div th:replace="@partials/header :: formField(h1='authors', placeholder='Search authors')"></div>
 
 	<main class="main-container">
 
@@ -15,13 +14,25 @@
 			<div th:insert="@partials/aside :: aside"></div>
 
 			<div class="main-content">
-
-				<div class="card" th:each="category : ${categories}">
+			
+				<div class="buttons-container">
+					<a th:href="@{/categories/edit-category/{id}(id=${category.id})}">
+						<button class="button">
+							<i class="uil uil-edit-alt"></i> EDIT
+						</button>
+					</a>
+					
+					<a th:href="@{/categories/{id}(id=${category.id})}">
+						<button class="button">
+							<i class="uil uil-trash"></i> DELETE
+						</button>
+					</a>
+				</div>
+			
+				<div class="card" th:object="${category}">
 					<section class="category-head">
 						<h2 class="category-name">
-							<a th:href="@{/categories/category-details/{id}(id=${category.id})}">
-								<span th:text="${category.name}"></span>
-							</a>
+							<span th:text="*{name}"></span>
 						</h2>
 					</section>
 					<section class="category-body">
