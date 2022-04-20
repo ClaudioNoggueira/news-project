@@ -14,35 +14,51 @@
 			<div th:insert="@partials/aside :: aside"></div>
 
 			<div class="main-content">
-				<div class="card" th:each="news : ${allNews}">
+			
+				<div class="buttons-container">
+					<a th:href="@{/news/edit-news/{id}(id=${news.id})}">
+						<button class="button">
+							<i class="uil uil-edit-alt"></i> EDIT
+						</button>
+					</a>
+					
+					<a th:href="@{/news/{id}(id=${news.id})}">
+						<button class="button">
+							<i class="uil uil-trash"></i> DELETE
+						</button>
+					</a>
+				</div>
+			
+				<div class="card" th:object="${news}">
 					<section class="news-header flex-container">
 						<h2 class="news-title">
-							<a th:href="@{/news/news-details/{id}(id=${news.id})}">
-								<span th:text="${news.title}"></span>
-							</a>
+							<span th:text="*{title}"></span>
 						</h2>
 						<h4 class="news-date">
-							<span th:text="${news.date}"></span>
+							<span th:text="*{date}"></span>
 						</h4>
 					</section>
 					<section class="news-body">
 						<p class="news-content">
-							<span th:utext="${#strings.abbreviate(news.content, 300)}"></span>
+							<span th:utext="*{content}"></span>
 						</p>
 					</section>
 					<section class="news-footer flex-container">
 						<ul class="news-categories">
-							<li class="news-category" th:each="category : ${news.categories}"><span
-								th:text="${category.name}"></span></li>
+							<li class="news-category" th:each="category : ${news.categories}">
+								<span th:text="${category.name}"></span>
+							</li>
 						</ul>
 
 						<h3 class="news-author">
-							<span th:text="${news.author.firstName}"></span> <span> </span> <span
-								th:text="${news.author.lastName}"></span>
+							<span th:text="${news.author.firstName}"></span>
+							<span> </span>
+							<span th:text="${news.author.lastName}"></span>
 						</h3>
 					</section>
 
 				</div>
+
 			</div>
 		</div>
 	</main>
