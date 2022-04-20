@@ -26,8 +26,11 @@
 					</section>
 					<section class="category-body">
 						<ul class="category-new">
-							<li class="news flex-container" th:each="news : ${category.news}"><span
-								th:text="${news.title}"></span><span th:text="${news.date}"></span>
+							<li class="news flex-container" th:each="news : ${category.news}">
+								<a th:href="@{/news/news-details/{id}(id=${news.id})}">
+									<span th:text="${news.title}"></span>
+								</a>
+								<span th:text="${news.date}"></span>
 							</li>
 						</ul>
 						<span th:if="${category.news.isEmpty()}">No news</span>

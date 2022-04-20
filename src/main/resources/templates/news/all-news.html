@@ -32,13 +32,19 @@
 					</section>
 					<section class="news-footer flex-container">
 						<ul class="news-categories">
-							<li class="news-category" th:each="category : ${news.categories}"><span
-								th:text="${category.name}"></span></li>
+							<li class="news-category" th:each="category : ${news.categories}">
+								<a th:href="@{/categories/category-details/{id}(id=${category.id})}">
+									<span th:text="${category.name}"></span>
+								</a>
+							</li>
 						</ul>
 
 						<h3 class="news-author">
-							<span th:text="${news.author.firstName}"></span> <span> </span> <span
-								th:text="${news.author.lastName}"></span>
+							<a th:href="@{/authors/author-details/{id}(id=${news.author.id})}">
+								<span th:text="${news.author.firstName}"></span>
+								<span> </span>
+								<span th:text="${news.author.lastName}"></span>
+							</a>
 						</h3>
 					</section>
 

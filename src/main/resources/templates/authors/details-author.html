@@ -43,8 +43,10 @@
 					<section class="author-body">
 						<ul class="author-news">
 							<li class="news flex-container" th:each="news : ${author.news}">
-								<span th:text="${news.title}"></span> <span
-								th:text="${news.date}"></span>
+								<a th:href="@{/news/news-details/{id}(id=${news.id})}">
+									<span th:text="${news.title}"></span>
+								</a>
+								<span th:text="${news.date}"></span>
 							</li>
 						</ul>
 						<span th:if="${author.news.isEmpty()}">No news</span>
