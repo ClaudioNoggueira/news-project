@@ -18,11 +18,11 @@
 				<form th:action="@{/categories/add-category}" method="POST" th:object="${category}">
 					<label class="add-label" for="name">CATEGORY NAME:</label>
 					<input class="add-input" type="text" name="name" id="name" placeholder="Type the category name..." th:field="*{name}" pattern="[a-zA-Z ]*" required>
-					<div class="alert" role="alert" th:text="${error}" th:if="${error}"></div>
 
-					<button type="submit" value="Submit" class="submit-button">INSERT CATEGORY</button>
+					<button type="submit" value="Submit" class="button submit-button">INSERT CATEGORY</button>
 				</form>
 				
+				<div class="alert" role="alert" th:text="${error}" th:if="${error}"></div>
 			</div>
 		</div>
 	</main>

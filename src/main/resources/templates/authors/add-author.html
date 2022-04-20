@@ -5,7 +5,7 @@
 
 <body>
 
-	<div th:replace="@partials/header :: formField(h1='news', placeholder='Search news')"></div>
+	<div th:replace="@partials/header :: formField(h1='author', placeholder='Search author')"></div>
 
 	<main class="main-container">
 
@@ -24,11 +24,11 @@
 					
 					<label class="add-label" for="email">EMAIL:</label>
 					<input class="add-input" type="email" name="email" id="email" placeholder="Type author's email..." th:field="*{email}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
-					<div class="alert" role="alert" th:text="${error}" th:if="${error}"></div>
 
 					<button type="submit" value="Submit" class="submit-button">INSERT AUTHOR</button>
 				</form>
 				
+				<div class="alert" role="alert" th:if="${error}" th:text="${error}"></div>
 			</div>
 		</div>
 	</main>

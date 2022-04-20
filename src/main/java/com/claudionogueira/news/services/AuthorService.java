@@ -131,8 +131,9 @@ public class AuthorService implements IAuthorService {
 		Author objToBeUpdated = this.findById(id);
 
 		if (dto.getEmail() != null && !dto.getEmail().equals("")) {
-			if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
-				objToBeUpdated.setEmail(dto.getEmail());
+			if (!dto.getEmail().equals(objToBeUpdated.getEmail()))
+				if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
+					objToBeUpdated.setEmail(dto.getEmail());
 		}
 
 		if (dto.getFirstName() != null && !dto.getFirstName().equals(""))

@@ -18,8 +18,11 @@
 				<div class="card" th:each="author : ${authors}">
 					<section class="author-header">
 						<h2 class="author-name">
-							<span th:text="${author.firstName}"></span> <span> </span> <span
-								th:text="${author.lastName}"></span>
+							<a th:href="@{/authors/author-details/{id}(id=${author.id})}">
+								<span th:text="${author.firstName}"></span>
+								<span> </span>
+								<span th:text="${author.lastName}"></span>
+							</a>
 						</h2>
 						<h3 class="author-email">
 							<span th:text="${author.email}"></span>
@@ -27,8 +30,10 @@
 					</section>
 					<section class="author-body">
 						<ul class="author-news">
-							<li class="news flex-container" th:each="news : ${author.news}"><span
-								th:text="${news.title}"></span> <span th:text="${news.date}"></span></li>
+							<li class="news flex-container" th:each="news : ${author.news}">
+								<span th:text="${news.title}"></span>
+								<span th:text="${news.date}"></span>
+							</li>
 						</ul>
 						<span th:if="${author.news.isEmpty()}">No news</span>
 					</section>

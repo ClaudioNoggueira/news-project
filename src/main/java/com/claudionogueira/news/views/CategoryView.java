@@ -40,7 +40,7 @@ public class CategoryView {
 		try {
 			service.add(dto);
 		} catch (BadRequestException e) {
-			attributes.addFlashAttribute("error", "Category '" + dto.getName() + "' already exists.");
+			attributes.addFlashAttribute("error", e.getMessage());
 			return "redirect:/categories/add-category";
 		}
 		return "redirect:/categories";
