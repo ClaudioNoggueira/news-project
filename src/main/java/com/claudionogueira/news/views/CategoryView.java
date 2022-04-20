@@ -24,6 +24,7 @@ public class CategoryView {
 		this.service = service;
 	}
 
+	// GET ALL CATEGORIES
 	@GetMapping(value = "/categories")
 	public String getCategories(Model model, Pageable pageable) {
 		Page<CategoryDTO> categories = service.findAll(pageable);
@@ -31,12 +32,14 @@ public class CategoryView {
 		return "categories/all-categories";
 	}
 
+	// GET ADD CATEGORY PAGE
 	@GetMapping(value = "/categories/add-category")
 	public String getAddCategory(Model model) {
 		model.addAttribute("category", new CategoryDTO());
 		return "categories/add-category";
 	}
 
+	// ADD CATEGORY
 	@PostMapping(value = "/categories/add-category")
 	public String addCategory(@ModelAttribute("category") CategoryDTO dto, RedirectAttributes attributes) {
 		try {
@@ -48,6 +51,7 @@ public class CategoryView {
 		return "redirect:/categories";
 	}
 
+	// GET CATEGORY INFO
 	@GetMapping(value = "/categories/category-details/{id}")
 	public String getDetailsCategory(@PathVariable String id, Model model) {
 		try {
@@ -57,5 +61,30 @@ public class CategoryView {
 		}
 		model.addAttribute("category", service.findByIdDTO(id));
 		return "categories/details-category";
+	}
+
+	// GET EDIT CATEGORY PAGE
+	@GetMapping(value = "/categories/edit-category/{id}")
+	public String getEditCategory(@PathVariable String id, Model model) {
+		try {
+			service.findByIdDTO(id);
+		} catch (ObjectNotFoundException e) {
+			return "redirect:/categories";
+		}
+		model.addAttribute("category", service.findByIdDTO(id));
+		return "categories/edit-category";
+	}
+
+	// EDIT CATEGORY
+	@PostMapping(value = "/categories/edit-category/{id}")
+	public String editCategory(@PathVariable String id, @ModelAttribute("author") CategoryDTO dto,
+			RedirectAttributes attributes) {
+		try {
+			service.update(id, dto);
+		} catch (BadRequestException e) {
+			attributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:/categories/edit-category/{id}";
+		}
+		return "redirect:/categories";
 	}
 }

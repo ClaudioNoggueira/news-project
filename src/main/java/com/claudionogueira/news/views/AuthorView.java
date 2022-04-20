@@ -24,6 +24,7 @@ public class AuthorView {
 		this.service = service;
 	}
 
+	// SEE ALL AUTHORS
 	@GetMapping(value = "/authors")
 	public String getAllAuthors(Pageable pageable, Model model) {
 		Page<AuthorDTO> authors = service.findAll(pageable);
@@ -31,12 +32,14 @@ public class AuthorView {
 		return "authors/all-authors";
 	}
 
+	// GET ADD AUTHOR PAGE
 	@GetMapping(value = "/authors/add-author")
 	public String getAddAuthor(Model model) {
 		model.addAttribute("author", new AuthorDTO());
 		return "authors/add-author";
 	}
 
+	// ADD AUTHOR
 	@PostMapping(value = "/authors/add-author")
 	public String addAuthor(@ModelAttribute("author") AuthorDTO dto, RedirectAttributes attributes) {
 		try {
@@ -47,7 +50,8 @@ public class AuthorView {
 		}
 		return "redirect:/authors";
 	}
-
+	
+	// GET EDIT AUTHOR PAGE
 	@GetMapping(value = "/authors/edit-author/{id}")
 	public String getEditAuthor(@PathVariable String id, Model model) {
 		try {
@@ -59,6 +63,7 @@ public class AuthorView {
 		return "authors/edit-author";
 	}
 
+	// EDIT AUTHOR
 	@PostMapping(value = "/authors/edit-author/{id}")
 	public String editAuthor(@PathVariable String id, @ModelAttribute("author") AuthorDTO dto,
 			RedirectAttributes attributes) {
@@ -71,6 +76,7 @@ public class AuthorView {
 		return "redirect:/authors";
 	}
 
+	// GET AUTHOR DETAILS
 	@GetMapping(value = "/authors/author-details/{id}")
 	public String getAuthorDetails(@PathVariable String id, Model model) {
 		try {
