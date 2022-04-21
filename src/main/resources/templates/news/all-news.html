@@ -14,6 +14,19 @@
 			<div th:insert="@partials/aside :: aside"></div>
 
 			<div class="main-content">
+			
+				<form th:action="@{/news/search}" method="GET" class="search-form">
+					<input class="input-text" type="text" name="title" id=""
+						placeholder="Search news by TITLE..." th:value="${title}">
+						
+					<input class="input-text" type="text" name="authorName" id="" pattern="[a-zA-Z ]*"
+						placeholder="Search news by AUTHOR NAME..." th:value="${authorName}">
+						
+					<button type="submit" class="button search-button">
+						<i class="uil uil-search"></i> SEARCH
+					</button>
+				</form>
+			
 				<div class="card" th:each="news : ${allNews}">
 					<section class="news-header flex-container">
 						<h2 class="news-title">
