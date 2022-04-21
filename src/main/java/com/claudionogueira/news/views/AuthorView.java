@@ -50,7 +50,7 @@ public class AuthorView {
 		}
 		return "redirect:/authors";
 	}
-	
+
 	// GET EDIT AUTHOR PAGE
 	@GetMapping(value = "/authors/edit-author/{id}")
 	public String getEditAuthor(@PathVariable String id, Model model) {
@@ -86,5 +86,17 @@ public class AuthorView {
 		}
 		model.addAttribute("author", service.findByIdDTO(id));
 		return "authors/details-author";
+	}
+
+	@GetMapping(path = "/authors/search")
+	public String search(Pageable pageable, Model model, String email, String name) {
+		if (email != null && !email.isEmpty() && !email.isBlank()) {
+			model.addAttribute("authors", service.findByEmailPaginated(email, pageable));
+		} else if (name != null && !name.isEmpty() && !name.isBlank()) {
+			model.addAttribute("authors", service.findByFullNamePageable(name, pageable));
+		} else {
+			return "redirect:/authors";
+		}
+		return "authors/all-authors";
 	}
 }
