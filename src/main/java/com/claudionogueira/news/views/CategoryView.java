@@ -87,4 +87,13 @@ public class CategoryView {
 		}
 		return "redirect:/categories";
 	}
+
+	// SEARCH CATEGORIES
+	@GetMapping(value = "/categories/search")
+	public String search(Pageable pageable, Model model, String name) {
+		if (name != null && !name.isEmpty() && !name.isBlank())
+			model.addAttribute("categories", service.findByNamePaginated(name, pageable));
+
+		return "categories/all-categories";
+	}
 }

@@ -88,6 +88,7 @@ public class AuthorView {
 		return "authors/details-author";
 	}
 
+	// SEARCH AUTHORS
 	@GetMapping(path = "/authors/search")
 	public String search(Pageable pageable, Model model, String email, String name) {
 		if (email != null && !email.isEmpty() && !email.isBlank()) {
