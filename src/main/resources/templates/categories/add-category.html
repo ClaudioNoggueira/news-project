@@ -17,7 +17,7 @@
 
 				<form th:action="@{/categories/add-category}" method="POST" th:object="${category}">
 					<label class="form-label" for="name">CATEGORY NAME:</label>
-					<input type="text" name="name" id="name" placeholder="Type the category name..." th:field="*{name}" pattern="[a-zA-Z ]*" required>
+					<input class="input-text" type="text" name="name" id="name" placeholder="Type the category name..." th:field="*{name}" pattern="[a-zA-Z ]*" required>
 
 					<button type="submit" value="Submit" class="button">INSERT CATEGORY</button>
 				</form>
