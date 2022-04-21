@@ -57,4 +57,11 @@ public class NewsView {
 		}
 		return "news/all-news";
 	}
+	
+	// DELETE NEWS
+	@GetMapping(value = "/news/delete-news/{id}")
+	public String delete(@PathVariable String id) {
+		service.delete(id);
+		return "redirect:/news";
+	}
 }

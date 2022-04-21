@@ -22,7 +22,7 @@
 						</button>
 					</a>
 					
-					<a th:href="@{/news/{id}(id=${news.id})}">
+					<a th:href="@{/news/delete-news/{id}(id=${news.id})}" onclick="return confirm('Are you sure you eant to delete this news?');">
 						<button class="button">
 							<i class="uil uil-trash"></i> DELETE
 						</button>
