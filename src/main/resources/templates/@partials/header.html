@@ -1,9 +1,5 @@
-<header class="main-header flex-container" th:fragment="formField (h1, placeholder)">
-	<h1 th:text="${#strings.toUpperCase(h1)}"></h1>
+<header class="main-header flex-container" th:fragment="formField (h2)">
+	<h1>NEWS-PROJECT</h1>
 
-	<form action="#" method="post">
-		<input type="text" name="search-box" id="" class="search-box"
-			th:placeholder="${placeholder}">
-		<button type="submit" class="search-button">SEARCH</button>
-	</form>
+	<h2 th:text="${#strings.toUpperCase(h2)}"></h2>
 </header>

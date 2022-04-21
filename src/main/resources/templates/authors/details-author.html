@@ -5,7 +5,7 @@
 
 <body>
 
-	<div th:replace="@partials/header :: formField(h1='authors', placeholder='Search authors')"></div>
+	<div th:replace="@partials/header :: formField(h2='authors')"></div>
 
 	<main class="main-container">
 
@@ -17,13 +17,13 @@
 			
 				<div class="buttons-container">
 					<a th:href="@{/authors/edit-author/{id}(id=${author.id})}">
-						<button class="button">
+						<button class="button edit-button">
 							<i class="uil uil-edit-alt"></i> EDIT
 						</button>
 					</a>
 					
 					<a th:href="@{/authors/{id}(id=${author.id})}">
-						<button class="button">
+						<button class="button delete-button">
 							<i class="uil uil-trash"></i> DELETE
 						</button>
 					</a>

@@ -6,7 +6,7 @@
 <body>
 
 	<div
-		th:replace="@partials/header :: formField(h1='authors', placeholder='Search authors')"></div>
+		th:replace="@partials/header :: formField(h2= 'authors')"></div>
 
 	<main class="main-container">
 
@@ -15,6 +15,7 @@
 			<div th:insert="@partials/aside :: aside"></div>
 
 			<div class="main-content">
+					
 				<div class="card" th:each="author : ${authors}">
 					<section class="author-header">
 						<h2 class="author-name">

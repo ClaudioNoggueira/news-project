@@ -5,7 +5,7 @@
 
 <body>
 
-	<div th:replace="@partials/header :: formField(h1='author', placeholder='Search author')"></div>
+	<div th:replace="@partials/header :: formField(h2='authors')"></div>
 
 	<main class="main-container">
 
@@ -16,16 +16,16 @@
 			<div class="main-content">
 
 				<form th:action="@{/authors/add-author}" method="POST" th:object="${author}">
-					<label class="add-label" for="firstname">FIRST	NAME:</label>
-					<input class="add-input" type="text" name="firstname" id="firstname" placeholder="Type author's first name..." th:field="*{firstName}" pattern="[a-zA-Z ]*" required>
+					<label class="form-label" for="firstname">FIRST	NAME:</label>
+					<input class="input-text" type="text" name="firstname" id="firstname" placeholder="Type author's first name..." th:field="*{firstName}" pattern="[a-zA-Z ]*" required>
 					
-					<label class="add-label" for="lastname">LAST NAME:</label>
-					<input class="add-input" type="text" name="lastname" id="lastname" placeholder="Type author's last name..." th:field="*{lastName}" pattern="[a-zA-Z]*" required>
+					<label class="form-label" for="lastname">LAST NAME:</label>
+					<input class="input-text" type="text" name="lastname" id="lastname" placeholder="Type author's last name..." th:field="*{lastName}" pattern="[a-zA-Z]*" required>
 					
-					<label class="add-label" for="email">EMAIL:</label>
-					<input class="add-input" type="email" name="email" id="email" placeholder="Type author's email..." th:field="*{email}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+					<label class="form-label" for="email">EMAIL:</label>
+					<input class="input-email" type="email" name="email" id="email" placeholder="Type author's email..." th:field="*{email}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
 
-					<button type="submit" value="Submit" class="submit-button">INSERT AUTHOR</button>
+					<button type="submit" value="Submit" class="button submit-button">INSERT AUTHOR</button>
 				</form>
 				
 				<div class="alert" role="alert" th:if="${error}" th:text="${error}"></div>
