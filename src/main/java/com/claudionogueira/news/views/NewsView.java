@@ -44,4 +44,17 @@ public class NewsView {
 		model.addAttribute("news", service.findByIdDTO(id));
 		return "news/details-news";
 	}
+	
+	// SEARCH NEWS
+	@GetMapping(value = "/news/search")
+	public String search(Pageable pageable, Model model, String title, String authorName) {
+		if (title != null && !title.isEmpty() && !title.isBlank()) {
+			model.addAttribute("allNews", service.findByTitlePaginated(title, pageable));
+		} else if (authorName != null && !authorName.isEmpty() && !authorName.isBlank()) {
+			model.addAttribute("allNews", service.findByAuthorName(authorName, pageable));
+		} else {
+			return "redirect:/news";
+		}
+		return "news/all-news";
+	}
 }
