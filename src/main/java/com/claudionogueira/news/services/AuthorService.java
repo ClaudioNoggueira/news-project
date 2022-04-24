@@ -63,6 +63,13 @@ public class AuthorService implements IAuthorService {
 
 	@Transactional(readOnly = true)
 	@Override
+	public AuthorDTO findByEmail(String email) {
+		Author author = authorRepo.findByEmail(email);
+		return this.convertAuthorToDTO(author);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
 	public Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable) {
 		Page<Author> page = authorRepo.findByEmailPaginated(email, pageable);
 		return this.convertPageToDTO(page);
