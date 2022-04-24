@@ -14,6 +14,10 @@ public class AuthorNoNewsDTO implements Serializable {
 
 	}
 
+	public AuthorNoNewsDTO(String email) {
+		this.email = email;
+	}
+
 	public AuthorNoNewsDTO(AuthorDTO dto) {
 		id = dto.getId();
 		firstName = dto.getFirstName();
