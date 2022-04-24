@@ -73,10 +73,6 @@ public class Check {
 			throw new BadRequestException("Content is mandatory and cannot be null, empty or blank.");
 		}
 
-		if (dto.getDate() == null || dto.getDate().toString().isEmpty() || dto.getDate().toString().isBlank()) {
-			throw new BadRequestException("Date is mandatory and cannot be null, empty or blank.");
-		}
-
 		return dto;
 	}
 
