@@ -3,6 +3,7 @@ package com.claudionogueira.news.controllers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.services.AuthorService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+@CrossOrigin(origins = "*")
+@Api(value = "News Project REST API")
 @RestController
 @RequestMapping(value = "/api/v1/authors")
 public class AuthorController {
@@ -25,17 +31,20 @@ public class AuthorController {
 		this.service = service;
 	}
 
+	@ApiOperation(value = "Returns all authors by pagination")
 	@GetMapping
 	public Page<AuthorDTO> findAll(Pageable pageable) {
 		return service.findAll(pageable);
 	}
 
+	@ApiOperation(value = "Returns one author by id")
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<AuthorDTO> findById(@PathVariable String id) {
 		AuthorDTO body = service.findByIdDTO(id);
 		return ResponseEntity.ok(body);
 	}
 
+	@ApiOperation(value = "Returns authors by search (email, full-name, first-name, last-name)")
 	@GetMapping(value = "/search")
 	public Page<AuthorDTO> search(@RequestParam(value = "email", defaultValue = "") String email,
 			@RequestParam(value = "full-name", defaultValue = "") String fullName,
@@ -77,12 +86,14 @@ public class AuthorController {
 		return service.findAll(pageable);
 	}
 
+	@ApiOperation(value = "Add new author")
 	@PostMapping(value = "/add-author")
 	public ResponseEntity<Void> add(@RequestBody AuthorDTO dto) {
 		service.add(dto);
 		return ResponseEntity.ok().build();
 	}
 
+	@ApiOperation(value = "Update author info based on it's ID")
 	@PutMapping(value = "/update-author/{id}")
 	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody AuthorDTO dto) {
 		service.update(id, dto);
