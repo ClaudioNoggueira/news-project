@@ -28,9 +28,12 @@ import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.INewsService;
 import com.claudionogueira.news.services.utils.Check;
+import com.claudionogueira.news.services.utils.NewsMapper;
 
 @Service
 public class NewsService implements INewsService {
+
+	private final NewsMapper mapper;
 
 	private final NewsRepo newsRepo;
 
@@ -40,9 +43,10 @@ public class NewsService implements INewsService {
 
 	private final CategoryNewsRepo categoryNewsRepo;
 
-	public NewsService(NewsRepo newsRepo, AuthorRepo authorRepo, CategoryRepo categoryRepo,
+	public NewsService(NewsMapper mapper, NewsRepo newsRepo, AuthorRepo authorRepo, CategoryRepo categoryRepo,
 			CategoryNewsRepo categoryNewsRepo) {
 		super();
+		this.mapper = mapper;
 		this.newsRepo = newsRepo;
 		this.authorRepo = authorRepo;
 		this.categoryRepo = categoryRepo;
@@ -110,7 +114,7 @@ public class NewsService implements INewsService {
 
 	@Override
 	public NewsDTO convertNewsToDTO(News news) {
-		NewsDTO dto = new NewsDTO(news);
+		NewsDTO dto = mapper.fromEntityToDTO(news);
 
 		for (CategoryNews categoryNews : news.getCategories()) {
 
