@@ -50,12 +50,10 @@ public class AuthorController {
 		return ResponseEntity.ok(body);
 	}
 
-	@ApiOperation(value = "Returns authors by search (email, full-name, first-name, last-name)")
+	@ApiOperation(value = "Returns authors by search (email, full-name)")
 	@GetMapping(value = "/search")
 	public Page<AuthorDTO> search(@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "full-name", defaultValue = "") String fullName,
-			@RequestParam(value = "first-name", defaultValue = "") String firstName,
-			@RequestParam(value = "last-name", defaultValue = "") String lastName, Pageable pageable) {
+			@RequestParam(value = "full-name", defaultValue = "") String fullName, Pageable pageable) {
 
 		// Find authors by email
 		if (!email.equals("")) {
@@ -68,22 +66,6 @@ public class AuthorController {
 		// Find authors by both first and last name
 		if (!fullName.equals("")) {
 			Page<AuthorDTO> page = service.findByFullNamePageable(fullName, pageable);
-			if (!page.isEmpty()) {
-				return page;
-			}
-		}
-
-		// Find authors by first name
-		if (!firstName.equals("")) {
-			Page<AuthorDTO> page = service.findByFirstNamePaginated(firstName, pageable);
-			if (!page.isEmpty()) {
-				return page;
-			}
-		}
-
-		// Find authors by last name
-		if (!lastName.equals("")) {
-			Page<AuthorDTO> page = service.findByLastNamePaginated(lastName, pageable);
 			if (!page.isEmpty()) {
 				return page;
 			}
