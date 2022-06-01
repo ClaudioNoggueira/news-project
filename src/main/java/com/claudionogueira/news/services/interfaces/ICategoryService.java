@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.inputs.CategoryInput;
+import com.claudionogueira.news.dto.updates.CategoryUpdate;
 import com.claudionogueira.news.models.Category;
 
 public interface ICategoryService {
@@ -12,7 +14,7 @@ public interface ICategoryService {
 
 	CategoryDTO convertCategoryToDTO(Category category);
 
-	boolean doesTheCategoryNameAlreadyExists(String name);
+	boolean categoryNameIsAvailable(String name, Category entity);
 
 	// GET
 	Page<CategoryDTO> findAll(Pageable pageable);
@@ -24,8 +26,8 @@ public interface ICategoryService {
 	CategoryDTO findByIdDTO(String id);
 
 	// POST
-	void add(CategoryDTO dto);
+	void add(CategoryInput input);
 
 	// PUT
-	void update(String id, CategoryDTO dto);
+	void update(String id, CategoryUpdate update);
 }

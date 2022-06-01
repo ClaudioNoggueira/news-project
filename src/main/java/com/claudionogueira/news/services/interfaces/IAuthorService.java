@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.AuthorDTO;
+import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.models.Author;
 
 public interface IAuthorService {
@@ -18,22 +20,18 @@ public interface IAuthorService {
 	Author findById(String id);
 
 	AuthorDTO findByIdDTO(String id);
-	
+
 	AuthorDTO findByEmail(String email);
 
 	Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable);
 
 	Page<AuthorDTO> findByFullNamePageable(String fullName, Pageable pageable);
 
-	Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable);
-
-	Page<AuthorDTO> findByLastNamePaginated(String lastName, Pageable pageable);
-
-	boolean doesTheEmailAlreadyExists(String email);
+	boolean emailIsAvailable(String email, Author entity);
 
 	// POST
-	void add(AuthorDTO dto);
+	void add(AuthorInput input);
 
 	// PUT
-	void update(String id, AuthorDTO dto);
+	void update(String id, AuthorUpdate update);
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,18 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.dto.NewsNoAuthorDTO;
-import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
-import com.claudionogueira.news.exceptions.BadRequestException;
+import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.dto.updates.AuthorUpdate;
+import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.models.CategoryNews;
 import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
-import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
 import com.claudionogueira.news.services.utils.Check;
 
@@ -32,11 +31,12 @@ public class AuthorService implements IAuthorService {
 
 	private final AuthorRepo authorRepo;
 
-	private final CategoryRepo categoryRepo;
+	private final CategoryService categoryService;
 
-	public AuthorService(AuthorRepo repo, CategoryRepo categoryRepo) {
-		this.authorRepo = repo;
-		this.categoryRepo = categoryRepo;
+	public AuthorService(AuthorRepo authorRepo, CategoryService categoryService) {
+		super();
+		this.authorRepo = authorRepo;
+		this.categoryService = categoryService;
 	}
 
 	@Transactional(readOnly = true)
@@ -64,7 +64,8 @@ public class AuthorService implements IAuthorService {
 	@Transactional(readOnly = true)
 	@Override
 	public AuthorDTO findByEmail(String email) {
-		Author author = authorRepo.findByEmail(email);
+		Author author = authorRepo.findByEmail(email)
+				.orElseThrow(() -> new ObjectNotFoundException("Author with e-mail: '" + email + "' not found."));
 		return this.convertAuthorToDTO(author);
 	}
 
@@ -102,64 +103,51 @@ public class AuthorService implements IAuthorService {
 		return this.convertPageToDTO(new PageImpl<>(list));
 	}
 
-	@Transactional(readOnly = true)
 	@Override
-	public Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable) {
-		Page<Author> page = authorRepo.findByFirstNameContainingIgnoreCase(firstName, pageable);
-		return this.convertPageToDTO(page);
-	}
+	public boolean emailIsAvailable(String email, Author entity) {
+		// Check if the email is already taken by a author and then check if the owner
+		// is NOT the same as the author to be added/updated
+		boolean emailIsTaken = authorRepo.findByEmail(email).stream()
+				.anyMatch(existingAuthor -> !existingAuthor.equals(entity));
 
-	@Transactional(readOnly = true)
-	@Override
-	public Page<AuthorDTO> findByLastNamePaginated(String lastName, Pageable pageable) {
-		Page<Author> page = authorRepo.findByLastNameContainingIgnoreCase(lastName, pageable);
-		return this.convertPageToDTO(page);
-	}
-
-	@Override
-	public boolean doesTheEmailAlreadyExists(String email) {
-		Author obj = authorRepo.findByEmail(email);
-		if (obj == null)
-			return false;
-
-		throw new BadRequestException("Email '" + email + "' already in use.");
-	}
-
-	@Override
-	public void add(AuthorDTO dto) {
-		dto = Check.authorDTO(dto);
-
-		if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
-			authorRepo.save(new Author(null, dto.getFirstName(), dto.getLastName(), dto.getEmail()));
-	}
-
-	@Override
-	public void update(String id, AuthorDTO dto) {
-		Author objToBeUpdated = this.findById(id);
-
-		if (dto.getEmail() != null && !dto.getEmail().equals("")) {
-			if (!dto.getEmail().equals(objToBeUpdated.getEmail()))
-				if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
-					objToBeUpdated.setEmail(dto.getEmail());
+		if (emailIsTaken) {
+			throw new DomainException("Email is already in use by someone else.");
 		}
 
-		if (dto.getFirstName() != null && !dto.getFirstName().equals(""))
-			objToBeUpdated.setFirstName(dto.getFirstName());
+		return true;
+	}
 
-		if (dto.getLastName() != null && !dto.getLastName().equals(""))
-			objToBeUpdated.setLastName(dto.getLastName());
+	@Override
+	public void add(AuthorInput input) {
+		Author author = new Author(null, input.getFirstName(), input.getLastName(), input.getEmail());
+
+		if (this.emailIsAvailable(input.getEmail(), author)) {
+			authorRepo.save(author);
+		}
+	}
+
+	@Override
+	public void update(String id, AuthorUpdate update) {
+		Author objToBeUpdated = this.findById(id);
+
+		if (!update.getEmail().equals(objToBeUpdated.getEmail())) {
+			if (this.emailIsAvailable(update.getEmail(), objToBeUpdated)) {
+				objToBeUpdated.setEmail(update.getEmail());
+			}
+		}
+
+		if (update.getFirstName() != null && !update.getFirstName().equals(""))
+			objToBeUpdated.setFirstName(update.getFirstName());
+
+		if (update.getLastName() != null && !update.getLastName().equals(""))
+			objToBeUpdated.setLastName(update.getLastName());
 
 		authorRepo.save(objToBeUpdated);
 	}
 
 	@Override
 	public Page<AuthorDTO> convertPageToDTO(Page<Author> page) {
-		List<AuthorDTO> list = new ArrayList<>();
-
-		for (Author author : page) {
-			list.add(this.convertAuthorToDTO(author));
-		}
-
+		List<AuthorDTO> list = page.stream().map(this::convertAuthorToDTO).collect(Collectors.toList());
 		return new PageImpl<AuthorDTO>(list);
 	}
 
@@ -173,12 +161,17 @@ public class AuthorService implements IAuthorService {
 			for (CategoryNews categoryNews : news.getCategories()) {
 				long category_id = categoryNews.getId().getCategory().getId();
 
-				Category category = categoryRepo.findById(category_id).orElseThrow(
-						() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
+				Category category = categoryService.findById(String.valueOf(category_id));
 
-				newsDTO.getCategories().add(new CategoryNoNewsDTO(new CategoryDTO(category)));
+				newsDTO.addCategory(category.getName());
 			}
-			authorDTO.getNews().add(new NewsNoAuthorDTO(newsDTO));
+
+			authorDTO.addNews(newsDTO.getTitle(), newsDTO.getContent(), newsDTO.getDate());
+
+			// Map NewsDTO.Category with Author.News.categories
+			for (NewsDTO.Category ndc : newsDTO.getCategories()) {
+				authorDTO.getNews().forEach(authorNews -> authorNews.addCategory(ndc.getName()));
+			}
 		}
 		return authorDTO;
 	}

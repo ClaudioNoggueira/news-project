@@ -1,7 +1,10 @@
 package com.claudionogueira.news.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.AuthorDTO;
+import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.services.AuthorService;
 
 import io.swagger.annotations.Api;
@@ -44,12 +50,10 @@ public class AuthorController {
 		return ResponseEntity.ok(body);
 	}
 
-	@ApiOperation(value = "Returns authors by search (email, full-name, first-name, last-name)")
+	@ApiOperation(value = "Returns authors by search (email, full-name)")
 	@GetMapping(value = "/search")
 	public Page<AuthorDTO> search(@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "full-name", defaultValue = "") String fullName,
-			@RequestParam(value = "first-name", defaultValue = "") String firstName,
-			@RequestParam(value = "last-name", defaultValue = "") String lastName, Pageable pageable) {
+			@RequestParam(value = "full-name", defaultValue = "") String fullName, Pageable pageable) {
 
 		// Find authors by email
 		if (!email.equals("")) {
@@ -67,36 +71,20 @@ public class AuthorController {
 			}
 		}
 
-		// Find authors by first name
-		if (!firstName.equals("")) {
-			Page<AuthorDTO> page = service.findByFirstNamePaginated(firstName, pageable);
-			if (!page.isEmpty()) {
-				return page;
-			}
-		}
-
-		// Find authors by last name
-		if (!lastName.equals("")) {
-			Page<AuthorDTO> page = service.findByLastNamePaginated(lastName, pageable);
-			if (!page.isEmpty()) {
-				return page;
-			}
-		}
-
 		return service.findAll(pageable);
 	}
 
 	@ApiOperation(value = "Add new author")
 	@PostMapping(value = "/add-author")
-	public ResponseEntity<Void> add(@RequestBody AuthorDTO dto) {
-		service.add(dto);
-		return ResponseEntity.ok().build();
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public void add(@Valid @RequestBody AuthorInput input) {
+		service.add(input);
 	}
 
 	@ApiOperation(value = "Update author info based on it's ID")
 	@PutMapping(value = "/update-author/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody AuthorDTO dto) {
-		service.update(id, dto);
+	public ResponseEntity<Void> update(@PathVariable String id, @Valid @RequestBody AuthorUpdate update) {
+		service.update(id, update);
 		return ResponseEntity.ok().build();
 	}
 }

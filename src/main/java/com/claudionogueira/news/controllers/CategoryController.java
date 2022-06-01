@@ -1,7 +1,10 @@
 package com.claudionogueira.news.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.inputs.CategoryInput;
+import com.claudionogueira.news.dto.updates.CategoryUpdate;
 import com.claudionogueira.news.services.CategoryService;
 
 import io.swagger.annotations.Api;
@@ -58,15 +64,15 @@ public class CategoryController {
 
 	@ApiOperation(value = "Add new category")
 	@PostMapping(value = "/add-category")
-	public ResponseEntity<Void> add(@RequestBody CategoryDTO dto) {
-		service.add(dto);
-		return ResponseEntity.ok().build();
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public void add(@Valid @RequestBody CategoryInput input) {
+		service.add(input);
 	}
 
 	@ApiOperation(value = "Update category info based on it's ID")
 	@PutMapping(value = "/update-category/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody CategoryDTO dto) {
-		service.update(id, dto);
+	public ResponseEntity<Void> update(@PathVariable String id, @Valid @RequestBody CategoryUpdate update) {
+		service.update(id, update);
 		return ResponseEntity.ok().build();
 	}
 }

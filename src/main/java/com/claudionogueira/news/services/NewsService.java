@@ -1,9 +1,11 @@
 package com.claudionogueira.news.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -11,9 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.inputs.NewsInput;
+import com.claudionogueira.news.dto.updates.NewsUpdate;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
@@ -40,6 +42,7 @@ public class NewsService implements INewsService {
 
 	public NewsService(NewsRepo newsRepo, AuthorRepo authorRepo, CategoryRepo categoryRepo,
 			CategoryNewsRepo categoryNewsRepo) {
+		super();
 		this.newsRepo = newsRepo;
 		this.authorRepo = authorRepo;
 		this.categoryRepo = categoryRepo;
@@ -118,11 +121,7 @@ public class NewsService implements INewsService {
 			Category category = categoryRepo.findById(category_id).orElseThrow(
 					() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 
-			// Converting to CategoryNoNewsDTO
-			CategoryNoNewsDTO categoryDTO = new CategoryNoNewsDTO(new CategoryDTO(category));
-
-			// Add categoryDTO to NewsDTO' Set<CategoryNoNewsDTO> categories
-			dto.getCategories().add(categoryDTO);
+			dto.addCategory(category.getName());
 		}
 
 		return dto;
@@ -130,78 +129,73 @@ public class NewsService implements INewsService {
 
 	@Override
 	public Page<NewsDTO> convertPageToDTO(Page<News> page) {
-		List<NewsDTO> list = new ArrayList<>();
-
-		for (News news : page) {
-			list.add(this.convertNewsToDTO(news));
-		}
-
+		List<NewsDTO> list = page.stream().map(this::convertNewsToDTO).collect(Collectors.toList());
 		return new PageImpl<NewsDTO>(list);
 	}
 
 	@Override
-	public void add(NewsDTO dto) {
-
-		dto = Check.newsDTO(dto);
+	public void add(NewsInput input) {
 
 		// Check if author with the id exists or throw exception
-		long author_id = Long.parseLong(dto.getAuthor().getId());
+		long author_id = input.getAuthor().getId();
 		Author author = authorRepo.findById(author_id)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 
 		// Check if any of the categories exists
-		for (CategoryNoNewsDTO obj : dto.getCategories()) {
-			
-			CategoryDTO categoryDTO = new CategoryDTO(Long.parseLong(obj.getId()), obj.getName());
-			obj = new CategoryNoNewsDTO(Check.categoryDTO(categoryDTO));
+		for (NewsInput.Category nic : input.getCategories()) {
+
 			// If the category doesn't exists, create a new one
-			Category category = categoryRepo.findByNameIgnoreCase((obj.getName()));
-			if (category == null) {
-				category = new Category(null, obj.getName());
-				categoryRepo.save(category);
-			}
+			if (categoryRepo.findByNameIgnoreCase(nic.getName()) == null)
+				categoryRepo.save(new Category(null, nic.getName()));
 		}
 
-		News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
+		News news = new News(null, input.getTitle(), input.getContent(), author, LocalDate.now());
 		news = newsRepo.saveAndFlush(news);
 
-		// Save categories of the new news
-		for (CategoryNoNewsDTO obj : dto.getCategories()) {
-			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+		// Save relation between category and news (CategoryNews)
+		for (NewsInput.Category nic : input.getCategories()) {
+
+			// Required categoryID
+			String categoryName = nic.getName();
+			Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
+					() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
+
 			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
 	}
 
 	@Override
-	public void update(String id, NewsDTO dto) {
+	public void update(String id, NewsUpdate update) {
 		// GET news to be updated by id or throw exception
 		News newsToBeUpdated = this.findById(id);
 
 		// Check if categories already exists or save a new one
-		for (CategoryNoNewsDTO obj : dto.getCategories()) {
-			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+		for (NewsUpdate.Category ndc : update.getCategories()) {
+			// Required categoryID
+			String categoryName = ndc.getName();
+			Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
+					() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
 			if (category == null) {
-				category = new Category(null, obj.getName());
+				category = new Category(null, ndc.getName());
 				categoryRepo.save(category);
 			}
 		}
 
 		// GET author by id or throw exception
-		long author_id = Check.authorID(dto.getAuthor().getId());
+		long author_id = Check.authorID(String.valueOf(update.getAuthor().getId()));
 		Author author = authorRepo.findById(author_id)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 		newsToBeUpdated.setAuthor(author);
 
-		if (dto.getTitle() != null && !dto.getTitle().isEmpty())
-			newsToBeUpdated.setTitle(dto.getTitle());
+		if (update.getTitle() != null && !update.getTitle().isEmpty())
+			newsToBeUpdated.setTitle(update.getTitle());
 
-		if (dto.getContent() != null && !dto.getContent().isEmpty())
-			newsToBeUpdated.setContent(dto.getContent());
+		if (update.getContent() != null && !update.getContent().isEmpty())
+			newsToBeUpdated.setContent(update.getContent());
 
-		if (dto.getDate() != null)
-			newsToBeUpdated.setDate(dto.getDate());
+		newsToBeUpdated.setDate(LocalDate.now());
 
-		if (!dto.getCategories().isEmpty()) {
+		if (!update.getCategories().isEmpty()) {
 			// DELETE all related rows in TB_CATEGORY_NEWS
 			for (CategoryNews entity : newsToBeUpdated.getCategories()) {
 				categoryNewsRepo.delete(entity);
@@ -210,8 +204,10 @@ public class NewsService implements INewsService {
 			newsToBeUpdated.getCategories().clear();
 
 			// Save all new categories of news
-			for (CategoryNoNewsDTO obj : dto.getCategories()) {
-				Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+			for (NewsUpdate.Category ndc : update.getCategories()) {
+				String categoryName = ndc.getName();
+				Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
+						() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
 				categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, newsToBeUpdated)));
 			}
 		}

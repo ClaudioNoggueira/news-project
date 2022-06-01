@@ -1,7 +1,7 @@
 package com.claudionogueira.news.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -9,10 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.dto.NewsDTO;
-import com.claudionogueira.news.dto.NewsNoCategoryDTO;
-import com.claudionogueira.news.exceptions.BadRequestException;
+import com.claudionogueira.news.dto.inputs.CategoryInput;
+import com.claudionogueira.news.dto.updates.CategoryUpdate;
+import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.models.CategoryNews;
@@ -73,7 +74,7 @@ public class CategoryService implements ICategoryService {
 			News news = newsRepo.findById(news_id)
 					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 
-			dto.getNews().add(new NewsNoCategoryDTO(new NewsDTO(news)));
+			dto.addNews(news.getTitle(), news.getContent(), news.getDate(), new AuthorDTO(news.getAuthor()));
 		}
 
 		return dto;
@@ -81,40 +82,35 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public Page<CategoryDTO> convertPageToDTO(Page<Category> page) {
-		List<CategoryDTO> list = new ArrayList<>();
-
-		for (Category category : page) {
-			list.add(this.convertCategoryToDTO(category));
-		}
-
+		List<CategoryDTO> list = page.stream().map(this::convertCategoryToDTO).collect(Collectors.toList());
 		return new PageImpl<CategoryDTO>(list);
 	}
 
 	@Override
-	public boolean doesTheCategoryNameAlreadyExists(String name) {
-		Category obj = categoryRepo.findByNameIgnoreCase(name);
-		if (obj == null)
-			return false;
+	public boolean categoryNameIsAvailable(String name, Category entity) {
+		boolean categoryIsNotAvailable = categoryRepo.findByNameIgnoreCase(name).stream()
+				.anyMatch(existingCategory -> !existingCategory.equals(entity));
 
-		throw new BadRequestException("Category '" + name + "' already exists.");
+		if (categoryIsNotAvailable) {
+			throw new DomainException("Category '" + name + "' already exists.");
+		}
+
+		return true;
 	}
 
 	@Override
-	public void add(CategoryDTO dto) {
-		dto = Check.categoryDTO(dto);
-		if (!this.doesTheCategoryNameAlreadyExists(dto.getName()))
-			categoryRepo.save(new Category(null, dto.getName()));
+	public void add(CategoryInput input) {
+		Category category = new Category(null, input.getName());
+		if (categoryNameIsAvailable(input.getName(), category)) {
+			categoryRepo.save(category);
+		}
 	}
 
 	@Override
-	public void update(String id, CategoryDTO dto) {
+	public void update(String id, CategoryUpdate update) {
 		Category objToBeUpdated = this.findById(id);
-
-		if (dto.getName() == null || dto.getName().isEmpty() || dto.getName().isBlank())
-			throw new BadRequestException("Category name is mandatory and cannot be null, empty or blank.");
-
-		if (!this.doesTheCategoryNameAlreadyExists(dto.getName())) {
-			objToBeUpdated.setName(dto.getName());
+		if (categoryNameIsAvailable(update.getName(), objToBeUpdated)) {
+			objToBeUpdated.setName(update.getName());
 			categoryRepo.save(objToBeUpdated);
 		}
 	}
