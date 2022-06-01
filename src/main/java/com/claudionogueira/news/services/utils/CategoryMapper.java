@@ -38,7 +38,6 @@ public class CategoryMapper {
 					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 
 			dto.addNews(news.getTitle(), news.getContent(), news.getDate(), new AuthorDTO(news.getAuthor()));
-
 		});
 
 		return dto;

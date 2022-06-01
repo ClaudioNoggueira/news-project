@@ -12,7 +12,6 @@ import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.models.CategoryNews;
 import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.CategoryRepo;
 
@@ -31,15 +30,16 @@ public class NewsMapper {
 	public NewsDTO fromEntityToDTO(News entity) {
 		NewsDTO dto = mapper.map(entity, NewsDTO.class);
 
-		for (CategoryNews categoryNews : entity.getCategories()) {
+		entity.getCategories().forEach(categoryNews -> {
 			// Category id based on CategoryNews id
 			long category_id = categoryNews.getId().getCategory().getId();
 
 			// Find category by id or throw exception
 			Category category = categoryRepo.findById(category_id).orElseThrow(
 					() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
+
 			dto.addCategory(category.getName());
-		}
+		});
 
 		return dto;
 	}
