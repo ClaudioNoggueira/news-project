@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.AuthorDTO;
+import com.claudionogueira.news.dto.inputs.AuthorInput;
 import com.claudionogueira.news.models.Author;
 
 public interface IAuthorService {
@@ -32,7 +33,7 @@ public interface IAuthorService {
 	boolean doesTheEmailAlreadyExists(String email);
 
 	// POST
-	void add(AuthorDTO dto);
+	void add(AuthorInput input);
 
 	// PUT
 	void update(String id, AuthorDTO dto);

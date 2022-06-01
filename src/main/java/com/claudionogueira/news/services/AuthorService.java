@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.dto.NewsNoAuthorDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.NewsNoAuthorDTO;
+import com.claudionogueira.news.dto.inputs.AuthorInput;
 import com.claudionogueira.news.exceptions.BadRequestException;
+import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
@@ -126,11 +128,13 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
-	public void add(AuthorDTO dto) {
-		dto = Check.authorDTO(dto);
+	public void add(AuthorInput input) {
+//		dto = Check.authorDTO(dto);
 
-		if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
-			authorRepo.save(new Author(null, dto.getFirstName(), dto.getLastName(), dto.getEmail()));
+		if (this.doesTheEmailAlreadyExists(input.getEmail()))
+			throw new DomainException("Email is already in use by someone else.");
+
+		authorRepo.save(new Author(null, input.getFirstName(), input.getLastName(), input.getEmail()));
 	}
 
 	@Override

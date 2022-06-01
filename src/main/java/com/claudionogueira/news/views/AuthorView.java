@@ -43,7 +43,7 @@ public class AuthorView {
 	@PostMapping(value = "/authors/add-author")
 	public String addAuthor(@ModelAttribute("author") AuthorDTO dto, RedirectAttributes attributes) {
 		try {
-			service.add(dto);
+//			service.add(dto);
 		} catch (BadRequestException e) {
 			attributes.addFlashAttribute("error", e.getMessage());
 			return "redirect:/authors/add-author";
