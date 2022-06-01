@@ -1,6 +1,11 @@
 package com.claudionogueira.news.services.utils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import com.claudionogueira.news.dto.AuthorDTO;
@@ -41,5 +46,10 @@ public class CategoryMapper {
 
 	public Category fromInputToEntity(CategoryInput input) {
 		return mapper.map(input, Category.class);
+	}
+	
+	public Page<CategoryDTO> fromPageEntityToPageDTO(Page<Category> page){
+		List<CategoryDTO> list = page.stream().map(this::fromEntityToDTO).collect(Collectors.toList());
+		return new PageImpl<CategoryDTO>(list);
 	}
 }

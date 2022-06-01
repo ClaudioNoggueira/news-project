@@ -44,14 +44,14 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public Page<CategoryDTO> findAll(Pageable pageable) {
 		Page<Category> page = categoryRepo.findAll(pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable) {
 		Page<Category> page = categoryRepo.findByNameContainingIgnoreCase(name, pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
