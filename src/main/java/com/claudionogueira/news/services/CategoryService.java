@@ -2,6 +2,7 @@ package com.claudionogueira.news.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -9,9 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.dto.NewsDTO;
-import com.claudionogueira.news.dto.NewsNoCategoryDTO;
 import com.claudionogueira.news.dto.inputs.CategoryInput;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.DomainException;
@@ -75,7 +75,8 @@ public class CategoryService implements ICategoryService {
 			News news = newsRepo.findById(news_id)
 					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 
-			dto.getNews().add(new NewsNoCategoryDTO(new NewsDTO(news)));
+//			dto.getNews().add(new NewsNoCategoryDTO(new NewsDTO(news)));
+			dto.addNews(news.getTitle(), news.getContent(), news.getDate(), new AuthorDTO(news.getAuthor()));
 		}
 
 		return dto;
@@ -83,12 +84,7 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public Page<CategoryDTO> convertPageToDTO(Page<Category> page) {
-		List<CategoryDTO> list = new ArrayList<>();
-
-		for (Category category : page) {
-			list.add(this.convertCategoryToDTO(category));
-		}
-
+		List<CategoryDTO> list = page.stream().map(this::convertCategoryToDTO).collect(Collectors.toList());
 		return new PageImpl<CategoryDTO>(list);
 	}
 
