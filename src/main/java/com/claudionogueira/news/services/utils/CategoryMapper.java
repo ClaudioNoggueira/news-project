@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.inputs.CategoryInput;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.models.CategoryNews;
@@ -14,17 +15,17 @@ import com.claudionogueira.news.repositories.NewsRepo;
 @Component
 public class CategoryMapper {
 
-	private final ModelMapper categoryMapper;
+	private final ModelMapper mapper;
 	private final NewsRepo newsRepo;
 
-	public CategoryMapper(ModelMapper categoryMapper, NewsRepo newsRepo) {
+	public CategoryMapper(ModelMapper mapper, NewsRepo newsRepo) {
 		super();
-		this.categoryMapper = categoryMapper;
+		this.mapper = mapper;
 		this.newsRepo = newsRepo;
 	}
 
 	public CategoryDTO fromEntityToDTO(Category entity) {
-		CategoryDTO dto = categoryMapper.map(entity, CategoryDTO.class);
+		CategoryDTO dto = mapper.map(entity, CategoryDTO.class);
 
 		for (CategoryNews categoryNews : entity.getNews()) {
 			long news_id = categoryNews.getId().getNews().getId();
@@ -36,5 +37,9 @@ public class CategoryMapper {
 		}
 
 		return dto;
+	}
+
+	public Category fromInputToEntity(CategoryInput input) {
+		return mapper.map(input, Category.class);
 	}
 }

@@ -105,7 +105,7 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public void add(CategoryInput input) {
-		Category category = new Category(null, input.getName());
+		Category category = mapper.fromInputToEntity(input);
 		if (categoryNameIsAvailable(input.getName(), category)) {
 			categoryRepo.save(category);
 		}
