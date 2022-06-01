@@ -142,7 +142,7 @@ public class NewsService implements INewsService {
 
 		// Check if author with the id exists or throw exception
 		long author_id = input.getAuthor().getId();
-		Author author = authorRepo.findById(author_id)
+		authorRepo.findById(author_id)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 
 		// Check if any of the categories exists
@@ -153,8 +153,8 @@ public class NewsService implements INewsService {
 				categoryRepo.save(new Category(null, nic.getName()));
 		}
 
-		News news = new News(null, input.getTitle(), input.getContent(), author, LocalDate.now());
-		news = newsRepo.saveAndFlush(news);
+		News news = newsRepo.saveAndFlush(mapper.fromInputToEntity(input));
+		news.setDate(LocalDate.now());
 
 		// Save relation between category and news (CategoryNews)
 		for (NewsInput.Category nic : input.getCategories()) {

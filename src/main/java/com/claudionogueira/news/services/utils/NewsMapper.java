@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.models.News;
 
 @Component
@@ -16,7 +17,11 @@ public class NewsMapper {
 		this.mapper = mapper;
 	}
 
-	public NewsDTO fromEntityToDTO(News newsEntity) {
-		return mapper.map(newsEntity, NewsDTO.class);
+	public NewsDTO fromEntityToDTO(News entity) {
+		return mapper.map(entity, NewsDTO.class);
+	}
+
+	public News fromInputToEntity(NewsInput input) {
+		return mapper.map(input, News.class);
 	}
 }
