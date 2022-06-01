@@ -20,18 +20,14 @@ public interface IAuthorService {
 	Author findById(String id);
 
 	AuthorDTO findByIdDTO(String id);
-	
+
 	AuthorDTO findByEmail(String email);
 
 	Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable);
 
 	Page<AuthorDTO> findByFullNamePageable(String fullName, Pageable pageable);
 
-	Page<AuthorDTO> findByFirstNamePaginated(String firstName, Pageable pageable);
-
-	Page<AuthorDTO> findByLastNamePaginated(String lastName, Pageable pageable);
-
-	boolean doesTheEmailAlreadyExists(String email);
+	boolean emailIsAvailable(String email, Author entity);
 
 	// POST
 	void add(AuthorInput input);
