@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.claudionogueira.news.models.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -21,11 +20,6 @@ public class CategoryDTO implements Serializable {
 
 	public CategoryDTO() {
 
-	}
-
-	public CategoryDTO(Category category) {
-		id = category.getId();
-		name = category.getName();
 	}
 
 	public CategoryDTO(Long id, String name) {

@@ -13,34 +13,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
 import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
-import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.models.CategoryNews;
-import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
+import com.claudionogueira.news.services.utils.AuthorMapper;
 import com.claudionogueira.news.services.utils.Check;
-import com.claudionogueira.news.services.utils.NewsMapper;
 
 @Service
 public class AuthorService implements IAuthorService {
 
-	private final NewsMapper newsMapper;
+	private final AuthorMapper mapper;
 
 	private final AuthorRepo authorRepo;
 
-	private final CategoryService categoryService;
-
-	public AuthorService(NewsMapper newsMapper, AuthorRepo authorRepo, CategoryService categoryService) {
+	public AuthorService(AuthorMapper mapper, AuthorRepo authorRepo) {
 		super();
-		this.newsMapper = newsMapper;
+		this.mapper = mapper;
 		this.authorRepo = authorRepo;
-		this.categoryService = categoryService;
 	}
 
 	@Transactional(readOnly = true)
@@ -62,7 +55,7 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public AuthorDTO findByIdDTO(String id) {
 		Author author = this.findById(id);
-		return this.convertAuthorToDTO(author);
+		return mapper.fromEntityToDTO(author);
 	}
 
 	@Transactional(readOnly = true)
@@ -70,7 +63,7 @@ public class AuthorService implements IAuthorService {
 	public AuthorDTO findByEmail(String email) {
 		Author author = authorRepo.findByEmail(email)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with e-mail: '" + email + "' not found."));
-		return this.convertAuthorToDTO(author);
+		return mapper.fromEntityToDTO(author);
 	}
 
 	@Transactional(readOnly = true)
@@ -151,34 +144,12 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public Page<AuthorDTO> convertPageToDTO(Page<Author> page) {
-		List<AuthorDTO> list = page.stream().map(this::convertAuthorToDTO).collect(Collectors.toList());
+		List<AuthorDTO> list = page.stream().map(author -> mapper.fromEntityToDTO(author)).collect(Collectors.toList());
 		return new PageImpl<AuthorDTO>(list);
 	}
 
 	@Override
 	public AuthorDTO convertAuthorToDTO(Author author) {
-		AuthorDTO authorDTO = new AuthorDTO(author);
-
-		for (News news : author.getAuthorNews()) {
-			NewsDTO newsDTO = newsMapper.fromEntityToDTO(news);
-
-			for (CategoryNews categoryNews : news.getCategories()) {
-				long category_id = categoryNews.getId().getCategory().getId();
-
-				Category category = categoryService.findById(String.valueOf(category_id));
-
-				newsDTO.addCategory(category.getName());
-			}
-
-			authorDTO.addNews(newsDTO.getTitle(), newsDTO.getContent(), newsDTO.getDate());
-
-			// Map NewsDTO.Category with Author.News.categories
-			newsDTO.getCategories().forEach(category -> {
-				authorDTO.getNews().forEach(authorNews -> {
-					authorNews.addCategory(category.getName());
-				});
-			});
-		}
-		return authorDTO;
+		return mapper.fromEntityToDTO(author);
 	}
 }
