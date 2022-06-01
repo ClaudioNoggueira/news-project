@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.inputs.CategoryInput;
+import com.claudionogueira.news.dto.updates.CategoryUpdate;
 import com.claudionogueira.news.services.CategoryService;
 
 import io.swagger.annotations.Api;
@@ -70,8 +71,8 @@ public class CategoryController {
 
 	@ApiOperation(value = "Update category info based on it's ID")
 	@PutMapping(value = "/update-category/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody CategoryDTO dto) {
-		service.update(id, dto);
+	public ResponseEntity<Void> update(@PathVariable String id, @Valid @RequestBody CategoryUpdate update) {
+		service.update(id, update);
 		return ResponseEntity.ok().build();
 	}
 }
