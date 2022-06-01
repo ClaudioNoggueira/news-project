@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -128,7 +129,7 @@ public class NewsService implements INewsService {
 			CategoryNoNewsDTO categoryDTO = new CategoryNoNewsDTO(new CategoryDTO(category));
 
 			// Add categoryDTO to NewsDTO' Set<CategoryNoNewsDTO> categories
-			dto.getCategories().add(categoryDTO);
+			dto.getCategories().add(new NewsDTO.Category(categoryDTO.getName()));
 		}
 
 		return dto;
@@ -136,12 +137,7 @@ public class NewsService implements INewsService {
 
 	@Override
 	public Page<NewsDTO> convertPageToDTO(Page<News> page) {
-		List<NewsDTO> list = new ArrayList<>();
-
-		for (News news : page) {
-			list.add(this.convertNewsToDTO(news));
-		}
-
+		List<NewsDTO> list = page.stream().map(this::convertNewsToDTO).collect(Collectors.toList());
 		return new PageImpl<NewsDTO>(list);
 	}
 
@@ -177,10 +173,10 @@ public class NewsService implements INewsService {
 		News newsToBeUpdated = this.findById(id);
 
 		// Check if categories already exists or save a new one
-		for (CategoryNoNewsDTO obj : dto.getCategories()) {
-			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+		for (NewsDTO.Category ndc : dto.getCategories()) {
+			Category category = categoryRepo.findByNameIgnoreCase(ndc.getName());
 			if (category == null) {
-				category = new Category(null, obj.getName());
+				category = new Category(null, ndc.getName());
 				categoryRepo.save(category);
 			}
 		}
@@ -209,8 +205,8 @@ public class NewsService implements INewsService {
 			newsToBeUpdated.getCategories().clear();
 
 			// Save all new categories of news
-			for (CategoryNoNewsDTO obj : dto.getCategories()) {
-				Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+			for (NewsDTO.Category ndc : dto.getCategories()) {
+				Category category = categoryRepo.findByNameIgnoreCase(ndc.getName());
 				categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, newsToBeUpdated)));
 			}
 		}

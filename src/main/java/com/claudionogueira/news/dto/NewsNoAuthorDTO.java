@@ -28,7 +28,7 @@ public class NewsNoAuthorDTO implements Serializable {
 		title = news.getTitle();
 		content = news.getContent();
 		date = news.getDate();
-		categories.addAll(news.getCategories());
+//		categories.addAll(news.getCategories());
 	}
 
 	public Long getId() {

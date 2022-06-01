@@ -23,7 +23,7 @@ public class NewsNoCategoryDTO {
 		title = news.getTitle();
 		content = news.getContent();
 		date = news.getDate();
-		author = news.getAuthor();
+//		author = news.getAuthor();
 	}
 
 	public String getId() {
