@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
+import com.claudionogueira.news.dto.updates.NewsUpdate;
 import com.claudionogueira.news.services.NewsService;
 
 import io.swagger.annotations.Api;
@@ -84,8 +85,8 @@ public class NewsController {
 
 	@ApiOperation(value = "Update news info based on it's ID")
 	@PutMapping(value = "/update-news/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody NewsDTO dto) {
-		service.update(id, dto);
+	public ResponseEntity<Void> update(@PathVariable String id, @Valid @RequestBody NewsUpdate update) {
+		service.update(id, update);
 		return ResponseEntity.ok().build();
 	}
 

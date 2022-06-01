@@ -17,6 +17,7 @@ import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
+import com.claudionogueira.news.dto.updates.NewsUpdate;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
@@ -159,22 +160,29 @@ public class NewsService implements INewsService {
 		News news = new News(null, input.getTitle(), input.getContent(), author, LocalDate.now());
 		news = newsRepo.saveAndFlush(news);
 
-		// Save categories of the new news
+		// Save relation between category and news (CategoryNews)
 		for (NewsInput.Category nic : input.getCategories()) {
+
 			// Required categoryID
-			Category category = categoryRepo.findByNameIgnoreCase(nic.getName());
+			String categoryName = nic.getName();
+			Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
+					() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
+
 			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
 	}
 
 	@Override
-	public void update(String id, NewsDTO dto) {
+	public void update(String id, NewsUpdate update) {
 		// GET news to be updated by id or throw exception
 		News newsToBeUpdated = this.findById(id);
 
 		// Check if categories already exists or save a new one
-		for (NewsDTO.Category ndc : dto.getCategories()) {
-			Category category = categoryRepo.findByNameIgnoreCase(ndc.getName());
+		for (NewsUpdate.Category ndc : update.getCategories()) {
+			// Required categoryID
+			String categoryName = ndc.getName();
+			Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
+					() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
 			if (category == null) {
 				category = new Category(null, ndc.getName());
 				categoryRepo.save(category);
@@ -182,21 +190,20 @@ public class NewsService implements INewsService {
 		}
 
 		// GET author by id or throw exception
-		long author_id = Check.authorID(dto.getAuthor().getId());
+		long author_id = Check.authorID(String.valueOf(update.getAuthor().getId()));
 		Author author = authorRepo.findById(author_id)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 		newsToBeUpdated.setAuthor(author);
 
-		if (dto.getTitle() != null && !dto.getTitle().isEmpty())
-			newsToBeUpdated.setTitle(dto.getTitle());
+		if (update.getTitle() != null && !update.getTitle().isEmpty())
+			newsToBeUpdated.setTitle(update.getTitle());
 
-		if (dto.getContent() != null && !dto.getContent().isEmpty())
-			newsToBeUpdated.setContent(dto.getContent());
+		if (update.getContent() != null && !update.getContent().isEmpty())
+			newsToBeUpdated.setContent(update.getContent());
 
-		if (dto.getDate() != null)
-			newsToBeUpdated.setDate(dto.getDate());
+		newsToBeUpdated.setDate(LocalDate.now());
 
-		if (!dto.getCategories().isEmpty()) {
+		if (!update.getCategories().isEmpty()) {
 			// DELETE all related rows in TB_CATEGORY_NEWS
 			for (CategoryNews entity : newsToBeUpdated.getCategories()) {
 				categoryNewsRepo.delete(entity);
@@ -205,8 +212,10 @@ public class NewsService implements INewsService {
 			newsToBeUpdated.getCategories().clear();
 
 			// Save all new categories of news
-			for (NewsDTO.Category ndc : dto.getCategories()) {
-				Category category = categoryRepo.findByNameIgnoreCase(ndc.getName());
+			for (NewsUpdate.Category ndc : update.getCategories()) {
+				String categoryName = ndc.getName();
+				Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
+						() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
 				categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, newsToBeUpdated)));
 			}
 		}

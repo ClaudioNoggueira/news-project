@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
+import com.claudionogueira.news.dto.updates.NewsUpdate;
 import com.claudionogueira.news.models.News;
 
 public interface INewsService {
@@ -28,7 +29,7 @@ public interface INewsService {
 	void add(NewsInput input);
 
 	// PUT
-	void update(String id, NewsDTO dto);
+	void update(String id, NewsUpdate update);
 
 	// DELETE
 	void delete(String id);
