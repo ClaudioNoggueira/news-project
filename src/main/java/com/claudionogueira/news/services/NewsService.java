@@ -1,5 +1,6 @@
 package com.claudionogueira.news.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
@@ -34,14 +36,18 @@ public class NewsService implements INewsService {
 
 	private final AuthorRepo authorRepo;
 
+	private final AuthorService authorService;
+
 	private final CategoryRepo categoryRepo;
 
 	private final CategoryNewsRepo categoryNewsRepo;
 
-	public NewsService(NewsRepo newsRepo, AuthorRepo authorRepo, CategoryRepo categoryRepo,
+	public NewsService(NewsRepo newsRepo, AuthorRepo authorRepo, AuthorService authorService, CategoryRepo categoryRepo,
 			CategoryNewsRepo categoryNewsRepo) {
+		super();
 		this.newsRepo = newsRepo;
 		this.authorRepo = authorRepo;
+		this.authorService = authorService;
 		this.categoryRepo = categoryRepo;
 		this.categoryNewsRepo = categoryNewsRepo;
 	}
@@ -140,34 +146,27 @@ public class NewsService implements INewsService {
 	}
 
 	@Override
-	public void add(NewsDTO dto) {
-
-		dto = Check.newsDTO(dto);
+	public void add(NewsInput input) {
 
 		// Check if author with the id exists or throw exception
-		long author_id = Long.parseLong(dto.getAuthor().getId());
-		Author author = authorRepo.findById(author_id)
-				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+		long author_id = input.getAuthor().getId();
+		Author author = authorService.findById(String.valueOf(author_id));
 
 		// Check if any of the categories exists
-		for (CategoryNoNewsDTO obj : dto.getCategories()) {
-			
-			CategoryDTO categoryDTO = new CategoryDTO(Long.parseLong(obj.getId()), obj.getName());
-			obj = new CategoryNoNewsDTO(Check.categoryDTO(categoryDTO));
+		for (NewsInput.Category nic : input.getCategories()) {
+
 			// If the category doesn't exists, create a new one
-			Category category = categoryRepo.findByNameIgnoreCase((obj.getName()));
-			if (category == null) {
-				category = new Category(null, obj.getName());
-				categoryRepo.save(category);
-			}
+			if (categoryRepo.findByNameIgnoreCase(nic.getName()) == null)
+				categoryRepo.save(new Category(null, nic.getName()));
 		}
 
-		News news = new News(null, dto.getTitle(), dto.getContent(), author, dto.getDate());
+		News news = new News(null, input.getTitle(), input.getContent(), author, LocalDate.now());
 		news = newsRepo.saveAndFlush(news);
 
 		// Save categories of the new news
-		for (CategoryNoNewsDTO obj : dto.getCategories()) {
-			Category category = categoryRepo.findByNameIgnoreCase(obj.getName());
+		for (NewsInput.Category nic : input.getCategories()) {
+			// Required categoryID
+			Category category = categoryRepo.findByNameIgnoreCase(nic.getName());
 			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
 	}

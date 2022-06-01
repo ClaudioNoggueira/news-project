@@ -1,7 +1,10 @@
 package com.claudionogueira.news.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,9 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.services.NewsService;
 
 import io.swagger.annotations.Api;
@@ -72,9 +77,9 @@ public class NewsController {
 
 	@ApiOperation(value = "Add new news")
 	@PostMapping(value = "/add-news")
-	public ResponseEntity<Void> add(@RequestBody NewsDTO dto) {
-		service.add(dto);
-		return ResponseEntity.ok().build();
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public void add(@Valid @RequestBody NewsInput input) {
+		service.add(input);
 	}
 
 	@ApiOperation(value = "Update news info based on it's ID")

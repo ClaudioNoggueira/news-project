@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.models.News;
 
 public interface INewsService {
@@ -24,7 +25,7 @@ public interface INewsService {
 	Page<NewsDTO> findByAuthorName(String name, Pageable pageable);
 
 	// POST
-	void add(NewsDTO dto);
+	void add(NewsInput input);
 
 	// PUT
 	void update(String id, NewsDTO dto);
