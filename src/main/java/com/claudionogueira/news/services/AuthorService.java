@@ -140,15 +140,4 @@ public class AuthorService implements IAuthorService {
 
 		authorRepo.save(objToBeUpdated);
 	}
-
-	@Override
-	public Page<AuthorDTO> convertPageToDTO(Page<Author> page) {
-		List<AuthorDTO> list = page.stream().map(author -> mapper.fromEntityToDTO(author)).collect(Collectors.toList());
-		return new PageImpl<AuthorDTO>(list);
-	}
-
-	@Override
-	public AuthorDTO convertAuthorToDTO(Author author) {
-		return mapper.fromEntityToDTO(author);
-	}
 }
