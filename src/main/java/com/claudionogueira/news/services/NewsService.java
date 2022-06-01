@@ -13,8 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.claudionogueira.news.dto.CategoryDTO;
-import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.dto.updates.NewsUpdate;
@@ -38,18 +36,15 @@ public class NewsService implements INewsService {
 
 	private final AuthorRepo authorRepo;
 
-	private final AuthorService authorService;
-
 	private final CategoryRepo categoryRepo;
 
 	private final CategoryNewsRepo categoryNewsRepo;
 
-	public NewsService(NewsRepo newsRepo, AuthorRepo authorRepo, AuthorService authorService, CategoryRepo categoryRepo,
+	public NewsService(NewsRepo newsRepo, AuthorRepo authorRepo, CategoryRepo categoryRepo,
 			CategoryNewsRepo categoryNewsRepo) {
 		super();
 		this.newsRepo = newsRepo;
 		this.authorRepo = authorRepo;
-		this.authorService = authorService;
 		this.categoryRepo = categoryRepo;
 		this.categoryNewsRepo = categoryNewsRepo;
 	}
@@ -126,11 +121,7 @@ public class NewsService implements INewsService {
 			Category category = categoryRepo.findById(category_id).orElseThrow(
 					() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 
-			// Converting to CategoryNoNewsDTO
-			CategoryNoNewsDTO categoryDTO = new CategoryNoNewsDTO(new CategoryDTO(category));
-
-			// Add categoryDTO to NewsDTO' Set<CategoryNoNewsDTO> categories
-			dto.getCategories().add(new NewsDTO.Category(categoryDTO.getName()));
+			dto.addCategory(category.getName());
 		}
 
 		return dto;
@@ -147,7 +138,8 @@ public class NewsService implements INewsService {
 
 		// Check if author with the id exists or throw exception
 		long author_id = input.getAuthor().getId();
-		Author author = authorService.findById(String.valueOf(author_id));
+		Author author = authorRepo.findById(author_id)
+				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
 
 		// Check if any of the categories exists
 		for (NewsInput.Category nic : input.getCategories()) {
