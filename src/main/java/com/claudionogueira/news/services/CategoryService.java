@@ -1,6 +1,5 @@
 package com.claudionogueira.news.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.inputs.CategoryInput;
-import com.claudionogueira.news.exceptions.BadRequestException;
+import com.claudionogueira.news.dto.updates.CategoryUpdate;
 import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
@@ -75,7 +74,6 @@ public class CategoryService implements ICategoryService {
 			News news = newsRepo.findById(news_id)
 					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 
-//			dto.getNews().add(new NewsNoCategoryDTO(new NewsDTO(news)));
 			dto.addNews(news.getTitle(), news.getContent(), news.getDate(), new AuthorDTO(news.getAuthor()));
 		}
 
@@ -89,32 +87,30 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public boolean doesTheCategoryNameAlreadyExists(String name) {
-		Category obj = categoryRepo.findByNameIgnoreCase(name);
-		if (obj == null)
-			return false;
+	public boolean categoryNameIsAvailable(String name, Category entity) {
+		boolean categoryIsNotAvailable = categoryRepo.findByNameIgnoreCase(name).stream()
+				.anyMatch(existingCategory -> !existingCategory.equals(entity));
 
-		throw new BadRequestException("Category '" + name + "' already exists.");
+		if (categoryIsNotAvailable) {
+			throw new DomainException("Category '" + name + "' already exists.");
+		}
+
+		return true;
 	}
 
 	@Override
 	public void add(CategoryInput input) {
-//		dto = Check.categoryDTO(dto);
-		if (this.doesTheCategoryNameAlreadyExists(input.getName()))
-			throw new DomainException("Category already exists.");
-
-		categoryRepo.save(new Category(null, input.getName()));
+		Category category = new Category(null, input.getName());
+		if (categoryNameIsAvailable(input.getName(), category)) {
+			categoryRepo.save(category);
+		}
 	}
 
 	@Override
-	public void update(String id, CategoryDTO dto) {
+	public void update(String id, CategoryUpdate update) {
 		Category objToBeUpdated = this.findById(id);
-
-		if (dto.getName() == null || dto.getName().isEmpty() || dto.getName().isBlank())
-			throw new BadRequestException("Category name is mandatory and cannot be null, empty or blank.");
-
-		if (!this.doesTheCategoryNameAlreadyExists(dto.getName())) {
-			objToBeUpdated.setName(dto.getName());
+		if (categoryNameIsAvailable(update.getName(), objToBeUpdated)) {
+			objToBeUpdated.setName(update.getName());
 			categoryRepo.save(objToBeUpdated);
 		}
 	}

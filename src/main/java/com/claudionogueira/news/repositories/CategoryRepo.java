@@ -1,5 +1,7 @@
 package com.claudionogueira.news.repositories;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +13,6 @@ import com.claudionogueira.news.models.Category;
 public interface CategoryRepo extends JpaRepository<Category, Long> {
 
 	Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
-	
-	Category findByNameIgnoreCase(String name);
+
+	Optional<Category> findByNameIgnoreCase(String name);
 }
