@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.NewsNoCategoryDTO;
+import com.claudionogueira.news.dto.inputs.CategoryInput;
 import com.claudionogueira.news.exceptions.BadRequestException;
+import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.models.CategoryNews;
@@ -100,10 +102,12 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public void add(CategoryDTO dto) {
-		dto = Check.categoryDTO(dto);
-		if (!this.doesTheCategoryNameAlreadyExists(dto.getName()))
-			categoryRepo.save(new Category(null, dto.getName()));
+	public void add(CategoryInput input) {
+//		dto = Check.categoryDTO(dto);
+		if (this.doesTheCategoryNameAlreadyExists(input.getName()))
+			throw new DomainException("Category already exists.");
+
+		categoryRepo.save(new Category(null, input.getName()));
 	}
 
 	@Override

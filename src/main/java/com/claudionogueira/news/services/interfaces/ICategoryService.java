@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.CategoryDTO;
+import com.claudionogueira.news.dto.inputs.CategoryInput;
 import com.claudionogueira.news.models.Category;
 
 public interface ICategoryService {
@@ -24,7 +25,7 @@ public interface ICategoryService {
 	CategoryDTO findByIdDTO(String id);
 
 	// POST
-	void add(CategoryDTO dto);
+	void add(CategoryInput input);
 
 	// PUT
 	void update(String id, CategoryDTO dto);
