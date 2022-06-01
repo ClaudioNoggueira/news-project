@@ -116,8 +116,7 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public void add(AuthorInput input) {
-		Author author = new Author(null, input.getFirstName(), input.getLastName(), input.getEmail());
-
+		Author author = mapper.fromInputToEntity(input);
 		if (this.emailIsAvailable(input.getEmail(), author)) {
 			authorRepo.save(author);
 		}

@@ -5,22 +5,24 @@ import org.springframework.stereotype.Component;
 
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.NewsDTO;
+import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.services.CategoryService;
+import com.claudionogueira.news.repositories.CategoryRepo;
 
 @Component
 public class AuthorMapper {
 
 	private final ModelMapper authorMapper;
 	private final NewsMapper newsMapper;
-	private final CategoryService categoryService;
+	private final CategoryRepo categoryRepo;
 
-	public AuthorMapper(ModelMapper authorMapper, NewsMapper newsMapper, CategoryService categoryService) {
+	public AuthorMapper(ModelMapper authorMapper, NewsMapper newsMapper, CategoryRepo categoryRepo) {
 		super();
 		this.authorMapper = authorMapper;
 		this.newsMapper = newsMapper;
-		this.categoryService = categoryService;
+		this.categoryRepo = categoryRepo;
 	}
 
 	public AuthorDTO fromEntityToDTO(Author entity) {
@@ -31,7 +33,8 @@ public class AuthorMapper {
 
 			news.getCategories().forEach(categoryNews -> {
 				long category_id = categoryNews.getId().getCategory().getId();
-				Category category = categoryService.findById(String.valueOf(category_id));
+				Category category = categoryRepo.findById(category_id).orElseThrow(
+						() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 				newsDTO.addCategory(category.getName());
 			});
 
@@ -46,5 +49,9 @@ public class AuthorMapper {
 		});
 
 		return dto;
+	}
+
+	public Author fromInputToEntity(AuthorInput input) {
+		return authorMapper.map(input, Author.class);
 	}
 }
