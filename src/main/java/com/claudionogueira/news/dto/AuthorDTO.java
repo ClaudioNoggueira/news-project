@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.claudionogueira.news.models.Author;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -25,13 +24,6 @@ public class AuthorDTO implements Serializable {
 
 	public AuthorDTO() {
 
-	}
-
-	public AuthorDTO(Author author) {
-		id = author.getId().toString();
-		firstName = author.getFirstName();
-		lastName = author.getLastName();
-		email = author.getEmail();
 	}
 
 	public String getId() {
