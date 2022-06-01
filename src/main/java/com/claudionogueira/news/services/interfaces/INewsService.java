@@ -10,10 +10,6 @@ import com.claudionogueira.news.models.News;
 
 public interface INewsService {
 
-	NewsDTO convertNewsToDTO(News news);
-
-	Page<NewsDTO> convertPageToDTO(Page<News> page);
-
 	// GET
 	News findById(String id);
 

@@ -13,37 +13,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.claudionogueira.news.dto.AuthorDTO;
-import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
 import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
-import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.models.CategoryNews;
-import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
+import com.claudionogueira.news.services.utils.AuthorMapper;
 import com.claudionogueira.news.services.utils.Check;
 
 @Service
 public class AuthorService implements IAuthorService {
 
+	private final AuthorMapper mapper;
+
 	private final AuthorRepo authorRepo;
 
-	private final CategoryService categoryService;
-
-	public AuthorService(AuthorRepo authorRepo, CategoryService categoryService) {
+	public AuthorService(AuthorMapper mapper, AuthorRepo authorRepo) {
 		super();
+		this.mapper = mapper;
 		this.authorRepo = authorRepo;
-		this.categoryService = categoryService;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findAll(Pageable pageable) {
 		Page<Author> page = authorRepo.findAll(pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
@@ -58,7 +55,7 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public AuthorDTO findByIdDTO(String id) {
 		Author author = this.findById(id);
-		return this.convertAuthorToDTO(author);
+		return mapper.fromEntityToDTO(author);
 	}
 
 	@Transactional(readOnly = true)
@@ -66,14 +63,14 @@ public class AuthorService implements IAuthorService {
 	public AuthorDTO findByEmail(String email) {
 		Author author = authorRepo.findByEmail(email)
 				.orElseThrow(() -> new ObjectNotFoundException("Author with e-mail: '" + email + "' not found."));
-		return this.convertAuthorToDTO(author);
+		return mapper.fromEntityToDTO(author);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable) {
 		Page<Author> page = authorRepo.findByEmailPaginated(email, pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
@@ -96,11 +93,11 @@ public class AuthorService implements IAuthorService {
 			set.add(author);
 		}
 
-		// Convert set to list
-		List<Author> list = new ArrayList<>(set);
+		// Convert set to list while converting Author to AuthorDTO
+		List<AuthorDTO> list = new ArrayList<>(
+				set.stream().map(author -> mapper.fromEntityToDTO(author)).collect(Collectors.toList()));
 
-		// Create page out of list and convert to page of AuthorDTO
-		return this.convertPageToDTO(new PageImpl<>(list));
+		return new PageImpl<AuthorDTO>(list);
 	}
 
 	@Override
@@ -119,8 +116,7 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public void add(AuthorInput input) {
-		Author author = new Author(null, input.getFirstName(), input.getLastName(), input.getEmail());
-
+		Author author = mapper.fromInputToEntity(input);
 		if (this.emailIsAvailable(input.getEmail(), author)) {
 			authorRepo.save(author);
 		}
@@ -143,36 +139,5 @@ public class AuthorService implements IAuthorService {
 			objToBeUpdated.setLastName(update.getLastName());
 
 		authorRepo.save(objToBeUpdated);
-	}
-
-	@Override
-	public Page<AuthorDTO> convertPageToDTO(Page<Author> page) {
-		List<AuthorDTO> list = page.stream().map(this::convertAuthorToDTO).collect(Collectors.toList());
-		return new PageImpl<AuthorDTO>(list);
-	}
-
-	@Override
-	public AuthorDTO convertAuthorToDTO(Author author) {
-		AuthorDTO authorDTO = new AuthorDTO(author);
-
-		for (News news : author.getAuthorNews()) {
-			NewsDTO newsDTO = new NewsDTO(news);
-
-			for (CategoryNews categoryNews : news.getCategories()) {
-				long category_id = categoryNews.getId().getCategory().getId();
-
-				Category category = categoryService.findById(String.valueOf(category_id));
-
-				newsDTO.addCategory(category.getName());
-			}
-
-			authorDTO.addNews(newsDTO.getTitle(), newsDTO.getContent(), newsDTO.getDate());
-
-			// Map NewsDTO.Category with Author.News.categories
-			for (NewsDTO.Category ndc : newsDTO.getCategories()) {
-				authorDTO.getNews().forEach(authorNews -> authorNews.addCategory(ndc.getName()));
-			}
-		}
-		return authorDTO;
 	}
 }

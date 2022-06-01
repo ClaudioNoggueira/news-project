@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.claudionogueira.news.models.News;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class NewsDTO implements Serializable {
@@ -25,12 +24,13 @@ public class NewsDTO implements Serializable {
 
 	}
 
-	public NewsDTO(News news) {
-		id = news.getId();
-		title = news.getTitle();
-		content = news.getContent();
-		date = news.getDate();
-		author = new AuthorDTO(news.getAuthor());
+	public NewsDTO(Long id, String title, String content, LocalDate date, AuthorDTO author) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		this.date = date;
+		this.author = author;
 	}
 
 	public Long getId() {
