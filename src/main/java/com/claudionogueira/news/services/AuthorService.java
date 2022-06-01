@@ -21,7 +21,6 @@ import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
 import com.claudionogueira.news.services.utils.AuthorMapper;
-import com.claudionogueira.news.services.utils.Check;
 
 @Service
 public class AuthorService implements IAuthorService {
@@ -30,10 +29,13 @@ public class AuthorService implements IAuthorService {
 
 	private final AuthorRepo authorRepo;
 
-	public AuthorService(AuthorMapper mapper, AuthorRepo authorRepo) {
+	private final FindAuthor findAuthor;
+
+	public AuthorService(AuthorMapper mapper, AuthorRepo authorRepo, FindAuthor findAuthor) {
 		super();
 		this.mapper = mapper;
 		this.authorRepo = authorRepo;
+		this.findAuthor = findAuthor;
 	}
 
 	@Transactional(readOnly = true)
@@ -45,16 +47,8 @@ public class AuthorService implements IAuthorService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public Author findById(String id) {
-		long author_id = Check.authorID(id);
-		return authorRepo.findById(author_id)
-				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
-	}
-
-	@Transactional(readOnly = true)
-	@Override
 	public AuthorDTO findByIdDTO(String id) {
-		Author author = this.findById(id);
+		Author author = findAuthor.byID(id);
 		return mapper.fromEntityToDTO(author);
 	}
 
@@ -124,7 +118,7 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public void update(String id, AuthorUpdate update) {
-		Author objToBeUpdated = this.findById(id);
+		Author objToBeUpdated = findAuthor.byID(id);
 
 		if (!update.getEmail().equals(objToBeUpdated.getEmail())) {
 			if (this.emailIsAvailable(update.getEmail(), objToBeUpdated)) {

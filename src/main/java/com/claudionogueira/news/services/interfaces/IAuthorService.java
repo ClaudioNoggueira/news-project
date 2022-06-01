@@ -13,8 +13,6 @@ public interface IAuthorService {
 	// GET
 	Page<AuthorDTO> findAll(Pageable pageable);
 
-	Author findById(String id);
-
 	AuthorDTO findByIdDTO(String id);
 
 	AuthorDTO findByEmail(String email);
