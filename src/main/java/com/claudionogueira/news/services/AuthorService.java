@@ -17,6 +17,7 @@ import com.claudionogueira.news.dto.CategoryNoNewsDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.NewsNoAuthorDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.exceptions.BadRequestException;
 import com.claudionogueira.news.exceptions.DomainException;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
@@ -66,7 +67,8 @@ public class AuthorService implements IAuthorService {
 	@Transactional(readOnly = true)
 	@Override
 	public AuthorDTO findByEmail(String email) {
-		Author author = authorRepo.findByEmail(email);
+		Author author = authorRepo.findByEmail(email)
+				.orElseThrow(() -> new BadRequestException("Author with e-mail: '" + email + "' not found."));
 		return this.convertAuthorToDTO(author);
 	}
 
@@ -120,7 +122,7 @@ public class AuthorService implements IAuthorService {
 
 	@Override
 	public boolean doesTheEmailAlreadyExists(String email) {
-		Author obj = authorRepo.findByEmail(email);
+		Author obj = authorRepo.findByEmail(email).get();
 		if (obj == null)
 			return false;
 
@@ -138,22 +140,29 @@ public class AuthorService implements IAuthorService {
 	}
 
 	@Override
-	public void update(String id, AuthorDTO dto) {
+	public void update(String id, AuthorUpdate update) {
 		Author objToBeUpdated = this.findById(id);
 
-		if (dto.getEmail() != null && !dto.getEmail().equals("")) {
-			if (!dto.getEmail().equals(objToBeUpdated.getEmail()))
-				if (!this.doesTheEmailAlreadyExists(dto.getEmail()))
-					objToBeUpdated.setEmail(dto.getEmail());
+		if (!update.getEmail().equals(objToBeUpdated.getEmail())) {
+			// Check if the email is already taken by a author and then check if the owner
+			// is NOT the same as the author to be updated
+			boolean emailIsTaken = authorRepo.findByEmail(update.getEmail()).stream()
+					.anyMatch(existingAuthor -> !existingAuthor.equals(objToBeUpdated));
+
+			if (emailIsTaken)
+				throw new DomainException("Email is already in use by someone else.");
+
+			objToBeUpdated.setEmail(update.getEmail());
 		}
 
-		if (dto.getFirstName() != null && !dto.getFirstName().equals(""))
-			objToBeUpdated.setFirstName(dto.getFirstName());
+		if (update.getFirstName() != null && !update.getFirstName().equals(""))
+			objToBeUpdated.setFirstName(update.getFirstName());
 
-		if (dto.getLastName() != null && !dto.getLastName().equals(""))
-			objToBeUpdated.setLastName(dto.getLastName());
+		if (update.getLastName() != null && !update.getLastName().equals(""))
+			objToBeUpdated.setLastName(update.getLastName());
 
 		authorRepo.save(objToBeUpdated);
+
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.claudionogueira.news.repositories;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +20,5 @@ public interface AuthorRepo extends JpaRepository<Author, Long> {
 
 	Page<Author> findByLastNameContainingIgnoreCase(String lastName, Pageable pageable);
 
-	Author findByEmail(String email);
+	Optional<Author> findByEmail(String email);
 }

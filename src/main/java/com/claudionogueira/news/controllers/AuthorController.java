@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.services.AuthorService;
 
 import io.swagger.annotations.Api;
@@ -100,8 +101,8 @@ public class AuthorController {
 
 	@ApiOperation(value = "Update author info based on it's ID")
 	@PutMapping(value = "/update-author/{id}")
-	public ResponseEntity<Void> update(@PathVariable String id, @RequestBody AuthorDTO dto) {
-		service.update(id, dto);
+	public ResponseEntity<Void> update(@PathVariable String id, @Valid @RequestBody AuthorUpdate update) {
+		service.update(id, update);
 		return ResponseEntity.ok().build();
 	}
 }

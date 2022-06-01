@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
+import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.models.Author;
 
 public interface IAuthorService {
@@ -36,5 +37,5 @@ public interface IAuthorService {
 	void add(AuthorInput input);
 
 	// PUT
-	void update(String id, AuthorDTO dto);
+	void update(String id, AuthorUpdate update);
 }
