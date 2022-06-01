@@ -14,21 +14,21 @@ public class StandardError implements Serializable {
 
 	private OffsetDateTime timestamp;
 	private Integer status;
-	private String error;
+	private String title;
 	private String message;
 	private String path;
 
-	private List<Field> fields = new ArrayList<>();
+	private List<Error> errors = new ArrayList<>();
 
 	public StandardError() {
 
 	}
 
-	public StandardError(OffsetDateTime timestamp, Integer status, String error, String message, String path) {
+	public StandardError(OffsetDateTime timestamp, Integer status, String title, String message, String path) {
 		super();
 		this.timestamp = timestamp;
 		this.status = status;
-		this.error = error;
+		this.title = title;
 		this.message = message;
 		this.path = path;
 	}
@@ -49,12 +49,12 @@ public class StandardError implements Serializable {
 		this.status = status;
 	}
 
-	public String getError() {
-		return error;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setError(String error) {
-		this.error = error;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getMessage() {
@@ -73,38 +73,38 @@ public class StandardError implements Serializable {
 		this.path = path;
 	}
 
-	public List<Field> getFields() {
-		return fields;
+	public List<Error> getErrors() {
+		return errors;
 	}
 
 	public void addField(String name, String message) {
-		this.getFields().add(new Field(name, message));
+		this.getErrors().add(new Error(name, message));
 	}
 
 	public void removeField(String name, String message) {
-		this.getFields().remove(new Field(name, message));
+		this.getErrors().remove(new Error(name, message));
 	}
 
-	public static class Field {
-		private String name;
+	public static class Error {
+		private String field;
 		private String message;
 
-		public Field() {
+		public Error() {
 
 		}
 
-		public Field(String name, String message) {
+		public Error(String field, String message) {
 			super();
-			this.name = name;
+			this.field = field;
 			this.message = message;
 		}
 
-		public String getName() {
-			return name;
+		public String getField() {
+			return field;
 		}
 
-		public void setName(String name) {
-			this.name = name;
+		public void setField(String field) {
+			this.field = field;
 		}
 
 		public String getMessage() {
