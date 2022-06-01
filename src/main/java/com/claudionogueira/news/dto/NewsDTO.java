@@ -17,7 +17,7 @@ public class NewsDTO implements Serializable {
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	private LocalDate date;
-	private AuthorNoNewsDTO author;
+	private AuthorDTO author;
 
 	private Set<NewsDTO.Category> categories = new HashSet<>();
 
@@ -30,7 +30,7 @@ public class NewsDTO implements Serializable {
 		title = news.getTitle();
 		content = news.getContent();
 		date = news.getDate();
-		author = new AuthorNoNewsDTO(new AuthorDTO(news.getAuthor()));
+		author = new AuthorDTO(news.getAuthor());
 	}
 
 	public Long getId() {
@@ -65,11 +65,11 @@ public class NewsDTO implements Serializable {
 		this.date = date;
 	}
 
-	public AuthorNoNewsDTO getAuthor() {
+	public AuthorDTO getAuthor() {
 		return author;
 	}
 
-	public void setAuthor(AuthorNoNewsDTO author) {
+	public void setAuthor(AuthorDTO author) {
 		this.author = author;
 	}
 
