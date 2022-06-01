@@ -25,16 +25,20 @@ import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
 import com.claudionogueira.news.services.utils.Check;
+import com.claudionogueira.news.services.utils.NewsMapper;
 
 @Service
 public class AuthorService implements IAuthorService {
+
+	private final NewsMapper newsMapper;
 
 	private final AuthorRepo authorRepo;
 
 	private final CategoryService categoryService;
 
-	public AuthorService(AuthorRepo authorRepo, CategoryService categoryService) {
+	public AuthorService(NewsMapper newsMapper, AuthorRepo authorRepo, CategoryService categoryService) {
 		super();
+		this.newsMapper = newsMapper;
 		this.authorRepo = authorRepo;
 		this.categoryService = categoryService;
 	}
@@ -156,7 +160,7 @@ public class AuthorService implements IAuthorService {
 		AuthorDTO authorDTO = new AuthorDTO(author);
 
 		for (News news : author.getAuthorNews()) {
-			NewsDTO newsDTO = new NewsDTO(news);
+			NewsDTO newsDTO = newsMapper.fromEntityToDTO(news);
 
 			for (CategoryNews categoryNews : news.getCategories()) {
 				long category_id = categoryNews.getId().getCategory().getId();
@@ -169,9 +173,11 @@ public class AuthorService implements IAuthorService {
 			authorDTO.addNews(newsDTO.getTitle(), newsDTO.getContent(), newsDTO.getDate());
 
 			// Map NewsDTO.Category with Author.News.categories
-			for (NewsDTO.Category ndc : newsDTO.getCategories()) {
-				authorDTO.getNews().forEach(authorNews -> authorNews.addCategory(ndc.getName()));
-			}
+			newsDTO.getCategories().forEach(category -> {
+				authorDTO.getNews().forEach(authorNews -> {
+					authorNews.addCategory(category.getName());
+				});
+			});
 		}
 		return authorDTO;
 	}

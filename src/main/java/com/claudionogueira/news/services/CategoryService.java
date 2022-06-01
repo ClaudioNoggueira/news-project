@@ -21,16 +21,21 @@ import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.ICategoryService;
+import com.claudionogueira.news.services.utils.CategoryMapper;
 import com.claudionogueira.news.services.utils.Check;
 
 @Service
 public class CategoryService implements ICategoryService {
 
+	private final CategoryMapper mapper;
+
 	private final CategoryRepo categoryRepo;
 
 	private final NewsRepo newsRepo;
 
-	public CategoryService(CategoryRepo categoryRepo, NewsRepo newsRepo) {
+	public CategoryService(CategoryMapper mapper, CategoryRepo categoryRepo, NewsRepo newsRepo) {
+		super();
+		this.mapper = mapper;
 		this.categoryRepo = categoryRepo;
 		this.newsRepo = newsRepo;
 	}
@@ -61,12 +66,12 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public CategoryDTO findByIdDTO(String id) {
 		Category category = this.findById(id);
-		return this.convertCategoryToDTO(category);
+		return mapper.fromEntityToDTO(category);
 	}
 
 	@Override
 	public CategoryDTO convertCategoryToDTO(Category category) {
-		CategoryDTO dto = new CategoryDTO(category);
+		CategoryDTO dto = mapper.fromEntityToDTO(category);
 
 		for (CategoryNews categoryNews : category.getNews()) {
 			long news_id = categoryNews.getId().getNews().getId();
@@ -82,7 +87,7 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public Page<CategoryDTO> convertPageToDTO(Page<Category> page) {
-		List<CategoryDTO> list = page.stream().map(this::convertCategoryToDTO).collect(Collectors.toList());
+		List<CategoryDTO> list = page.stream().map(cat -> mapper.fromEntityToDTO(cat)).collect(Collectors.toList());
 		return new PageImpl<CategoryDTO>(list);
 	}
 
