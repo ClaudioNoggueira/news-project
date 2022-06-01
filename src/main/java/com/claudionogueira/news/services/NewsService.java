@@ -57,14 +57,14 @@ public class NewsService implements INewsService {
 	@Override
 	public Page<NewsDTO> findAll(Pageable pageable) {
 		Page<News> page = newsRepo.findAll(pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public Page<NewsDTO> findByTitlePaginated(String title, Pageable pageable) {
 		Page<News> page = newsRepo.findByTitleContainingIgnoreCase(title, pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
@@ -78,8 +78,7 @@ public class NewsService implements INewsService {
 	@Transactional(readOnly = true)
 	@Override
 	public NewsDTO findByIdDTO(String id) {
-		News news = this.findById(id);
-		return this.convertNewsToDTO(news);
+		return mapper.fromEntityToDTO(this.findById(id));
 	}
 
 	@Transactional(readOnly = true)
@@ -90,11 +89,13 @@ public class NewsService implements INewsService {
 
 		// Same page for both queries
 		Page<Author> page = authorRepo.findByFirstNameContainingIgnoreCase(name, pageable);
+
 		for (Author author : page) {
 			for (News authorNews : author.getAuthorNews()) {
 				set.add(authorNews);
 			}
 		}
+
 		// Clear page to use in the next query
 		page = Page.empty();
 
@@ -105,35 +106,10 @@ public class NewsService implements INewsService {
 			}
 		}
 
-		// Convert set to list
-		List<News> list = new ArrayList<>(set);
+		// Convert set to list while converting News to NewsDTO
+		List<NewsDTO> list = new ArrayList<>(
+				set.stream().map(news -> mapper.fromEntityToDTO(news)).collect(Collectors.toList()));
 
-		// Create page using list<News> and setting as argument for convertToDTO
-		return this.convertPageToDTO(new PageImpl<News>(list));
-	}
-
-	@Override
-	public NewsDTO convertNewsToDTO(News news) {
-		NewsDTO dto = mapper.fromEntityToDTO(news);
-
-		for (CategoryNews categoryNews : news.getCategories()) {
-
-			// Category id based on CategoryNews id
-			long category_id = categoryNews.getId().getCategory().getId();
-
-			// Find category by id or throw exception
-			Category category = categoryRepo.findById(category_id).orElseThrow(
-					() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
-
-			dto.addCategory(category.getName());
-		}
-
-		return dto;
-	}
-
-	@Override
-	public Page<NewsDTO> convertPageToDTO(Page<News> page) {
-		List<NewsDTO> list = page.stream().map(this::convertNewsToDTO).collect(Collectors.toList());
 		return new PageImpl<NewsDTO>(list);
 	}
 
