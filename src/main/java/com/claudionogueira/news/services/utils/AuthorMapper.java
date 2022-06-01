@@ -1,6 +1,11 @@
 package com.claudionogueira.news.services.utils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import com.claudionogueira.news.dto.AuthorDTO;
@@ -14,22 +19,20 @@ import com.claudionogueira.news.repositories.CategoryRepo;
 @Component
 public class AuthorMapper {
 
-	private final ModelMapper authorMapper;
-	private final NewsMapper newsMapper;
+	private final ModelMapper mapper;
 	private final CategoryRepo categoryRepo;
 
-	public AuthorMapper(ModelMapper authorMapper, NewsMapper newsMapper, CategoryRepo categoryRepo) {
+	public AuthorMapper(ModelMapper mapper, CategoryRepo categoryRepo) {
 		super();
-		this.authorMapper = authorMapper;
-		this.newsMapper = newsMapper;
+		this.mapper = mapper;
 		this.categoryRepo = categoryRepo;
 	}
 
 	public AuthorDTO fromEntityToDTO(Author entity) {
-		AuthorDTO dto = authorMapper.map(entity, AuthorDTO.class);
+		AuthorDTO dto = mapper.map(entity, AuthorDTO.class);
 
 		entity.getAuthorNews().forEach(news -> {
-			NewsDTO newsDTO = newsMapper.fromEntityToDTO(news);
+			NewsDTO newsDTO = new NewsDTO(null, news.getTitle(), news.getContent(), news.getDate(), null);
 
 			news.getCategories().forEach(categoryNews -> {
 				long category_id = categoryNews.getId().getCategory().getId();
@@ -52,6 +55,11 @@ public class AuthorMapper {
 	}
 
 	public Author fromInputToEntity(AuthorInput input) {
-		return authorMapper.map(input, Author.class);
+		return mapper.map(input, Author.class);
+	}
+
+	public Page<AuthorDTO> fromPageEntityToPageDTO(Page<Author> page) {
+		List<AuthorDTO> list = page.stream().map(this::fromEntityToDTO).collect(Collectors.toList());
+		return new PageImpl<AuthorDTO>(list);
 	}
 }

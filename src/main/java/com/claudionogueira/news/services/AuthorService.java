@@ -40,7 +40,7 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public Page<AuthorDTO> findAll(Pageable pageable) {
 		Page<Author> page = authorRepo.findAll(pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
@@ -70,7 +70,7 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public Page<AuthorDTO> findByEmailPaginated(String email, Pageable pageable) {
 		Page<Author> page = authorRepo.findByEmailPaginated(email, pageable);
-		return this.convertPageToDTO(page);
+		return mapper.fromPageEntityToPageDTO(page);
 	}
 
 	@Transactional(readOnly = true)
@@ -93,11 +93,11 @@ public class AuthorService implements IAuthorService {
 			set.add(author);
 		}
 
-		// Convert set to list
-		List<Author> list = new ArrayList<>(set);
+		// Convert set to list while converting Author to AuthorDTO
+		List<AuthorDTO> list = new ArrayList<>(
+				set.stream().map(author -> mapper.fromEntityToDTO(author)).collect(Collectors.toList()));
 
-		// Create page out of list and convert to page of AuthorDTO
-		return this.convertPageToDTO(new PageImpl<>(list));
+		return new PageImpl<AuthorDTO>(list);
 	}
 
 	@Override
