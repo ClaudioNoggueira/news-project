@@ -19,7 +19,7 @@ public class NewsDTO implements Serializable {
 	private LocalDate date;
 	private AuthorNoNewsDTO author;
 
-	private Set<CategoryNoNewsDTO> categories = new HashSet<>();
+	private Set<NewsDTO.Category> categories = new HashSet<>();
 
 	public NewsDTO() {
 
@@ -73,7 +73,36 @@ public class NewsDTO implements Serializable {
 		this.author = author;
 	}
 
-	public Set<CategoryNoNewsDTO> getCategories() {
+	public Set<NewsDTO.Category> getCategories() {
 		return categories;
+	}
+
+	public void addCategory(String name) {
+		this.getCategories().add(new Category(name));
+	}
+
+	public void removeCategory(String name) {
+		this.getCategories().remove(new Category(name));
+	}
+
+	public static class Category {
+		private String name;
+
+		public Category() {
+
+		}
+
+		public Category(String name) {
+			super();
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 }
