@@ -13,7 +13,6 @@ import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.inputs.CategoryInput;
 import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.models.CategoryNews;
 import com.claudionogueira.news.models.News;
 import com.claudionogueira.news.repositories.NewsRepo;
 
@@ -32,14 +31,15 @@ public class CategoryMapper {
 	public CategoryDTO fromEntityToDTO(Category entity) {
 		CategoryDTO dto = mapper.map(entity, CategoryDTO.class);
 
-		for (CategoryNews categoryNews : entity.getNews()) {
+		entity.getNews().forEach(categoryNews -> {
 			long news_id = categoryNews.getId().getNews().getId();
 
 			News news = newsRepo.findById(news_id)
 					.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
 
 			dto.addNews(news.getTitle(), news.getContent(), news.getDate(), new AuthorDTO(news.getAuthor()));
-		}
+
+		});
 
 		return dto;
 	}
@@ -47,8 +47,8 @@ public class CategoryMapper {
 	public Category fromInputToEntity(CategoryInput input) {
 		return mapper.map(input, Category.class);
 	}
-	
-	public Page<CategoryDTO> fromPageEntityToPageDTO(Page<Category> page){
+
+	public Page<CategoryDTO> fromPageEntityToPageDTO(Page<Category> page) {
 		List<CategoryDTO> list = page.stream().map(this::fromEntityToDTO).collect(Collectors.toList());
 		return new PageImpl<CategoryDTO>(list);
 	}
