@@ -10,10 +10,6 @@ import com.claudionogueira.news.models.Category;
 
 public interface ICategoryService {
 
-	Page<CategoryDTO> convertPageToDTO(Page<Category> page);
-
-	CategoryDTO convertCategoryToDTO(Category category);
-
 	boolean categoryNameIsAvailable(String name, Category entity);
 
 	// GET
