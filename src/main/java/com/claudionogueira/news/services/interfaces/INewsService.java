@@ -6,13 +6,10 @@ import org.springframework.data.domain.Pageable;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.dto.updates.NewsUpdate;
-import com.claudionogueira.news.models.News;
 
 public interface INewsService {
 
 	// GET
-	News findById(String id);
-
 	NewsDTO findByIdDTO(String id);
 
 	Page<NewsDTO> findAll(Pageable pageable);
