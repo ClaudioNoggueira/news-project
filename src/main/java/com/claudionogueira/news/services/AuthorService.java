@@ -16,7 +16,6 @@ import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
 import com.claudionogueira.news.dto.updates.AuthorUpdate;
 import com.claudionogueira.news.exceptions.DomainException;
-import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.repositories.AuthorRepo;
 import com.claudionogueira.news.services.interfaces.IAuthorService;
@@ -49,14 +48,6 @@ public class AuthorService implements IAuthorService {
 	@Override
 	public AuthorDTO findByIdDTO(String id) {
 		Author author = findAuthor.byID(id);
-		return mapper.fromEntityToDTO(author);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public AuthorDTO findByEmail(String email) {
-		Author author = authorRepo.findByEmail(email)
-				.orElseThrow(() -> new ObjectNotFoundException("Author with e-mail: '" + email + "' not found."));
 		return mapper.fromEntityToDTO(author);
 	}
 
