@@ -9,11 +9,11 @@ import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.utils.Check;
 
 @Service
-public class FindNews {
+public class FindOneNews {
 
 	private final NewsRepo repo;
 
-	public FindNews(NewsRepo repo) {
+	public FindOneNews(NewsRepo repo) {
 		super();
 		this.repo = repo;
 	}

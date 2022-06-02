@@ -11,12 +11,12 @@ import com.claudionogueira.news.services.utils.AuthorMapper;
 import com.claudionogueira.news.services.utils.Check;
 
 @Service
-public class FindAuthor {
+public class FindOneAuthor {
 
 	private final AuthorRepo repo;
 	private final AuthorMapper mapper;
 
-	public FindAuthor(AuthorRepo repo, AuthorMapper mapper) {
+	public FindOneAuthor(AuthorRepo repo, AuthorMapper mapper) {
 		super();
 		this.repo = repo;
 		this.mapper = mapper;

@@ -28,9 +28,9 @@ public class AuthorService implements IAuthorService {
 
 	private final AuthorRepo authorRepo;
 
-	private final FindAuthor findAuthor;
+	private final FindOneAuthor findAuthor;
 
-	public AuthorService(AuthorMapper mapper, AuthorRepo authorRepo, FindAuthor findAuthor) {
+	public AuthorService(AuthorMapper mapper, AuthorRepo authorRepo, FindOneAuthor findAuthor) {
 		super();
 		this.mapper = mapper;
 		this.authorRepo = authorRepo;

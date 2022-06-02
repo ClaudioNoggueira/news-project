@@ -35,11 +35,11 @@ public class NewsService implements INewsService {
 
 	private final NewsRepo newsRepo;
 
-	private final FindNews findNews;
+	private final FindOneNews findNews;
 
-	private final FindAuthor findAuthor;
+	private final FindOneAuthor findAuthor;
 
-	private final FindCategory findCategory;
+	private final FindOneCategory findCategory;
 
 	private final AuthorRepo authorRepo;
 
@@ -47,8 +47,8 @@ public class NewsService implements INewsService {
 
 	private final CategoryNewsRepo categoryNewsRepo;
 
-	public NewsService(NewsMapper mapper, NewsRepo newsRepo, FindNews findNews, FindAuthor findAuthor,
-			FindCategory findCategory, AuthorRepo authorRepo, CategoryRepo categoryRepo,
+	public NewsService(NewsMapper mapper, NewsRepo newsRepo, FindOneNews findNews, FindOneAuthor findAuthor,
+			FindOneCategory findCategory, AuthorRepo authorRepo, CategoryRepo categoryRepo,
 			CategoryNewsRepo categoryNewsRepo) {
 		super();
 		this.mapper = mapper;

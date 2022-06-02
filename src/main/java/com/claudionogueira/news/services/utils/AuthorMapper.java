@@ -13,15 +13,15 @@ import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.services.FindCategory;
+import com.claudionogueira.news.services.FindOneCategory;
 
 @Component
 public class AuthorMapper {
 
 	private final ModelMapper mapper;
-	private final FindCategory findCategory;
+	private final FindOneCategory findCategory;
 
-	public AuthorMapper(ModelMapper mapper, FindCategory findCategory) {
+	public AuthorMapper(ModelMapper mapper, FindOneCategory findCategory) {
 		super();
 		this.mapper = mapper;
 		this.findCategory = findCategory;

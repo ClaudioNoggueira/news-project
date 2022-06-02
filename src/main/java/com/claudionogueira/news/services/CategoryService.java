@@ -21,9 +21,9 @@ public class CategoryService implements ICategoryService {
 
 	private final CategoryRepo categoryRepo;
 
-	private final FindCategory findCategory;
+	private final FindOneCategory findCategory;
 
-	public CategoryService(CategoryMapper mapper, CategoryRepo categoryRepo, FindCategory findCategory) {
+	public CategoryService(CategoryMapper mapper, CategoryRepo categoryRepo, FindOneCategory findCategory) {
 		super();
 		this.mapper = mapper;
 		this.categoryRepo = categoryRepo;

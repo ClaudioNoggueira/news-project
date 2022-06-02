@@ -9,11 +9,11 @@ import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.services.utils.Check;
 
 @Service
-public class FindCategory {
+public class FindOneCategory {
 
 	private final CategoryRepo repo;
 
-	public FindCategory(CategoryRepo repo) {
+	public FindOneCategory(CategoryRepo repo) {
 		super();
 		this.repo = repo;
 	}
