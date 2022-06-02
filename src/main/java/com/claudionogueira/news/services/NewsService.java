@@ -128,8 +128,9 @@ public class NewsService implements INewsService {
 				categoryRepo.save(new Category(null, nic.getName()));
 		}
 
-		News news = newsRepo.saveAndFlush(mapper.fromInputToEntity(input));
+		News news = mapper.fromInputToEntity(input);
 		news.setDate(LocalDate.now());
+		newsRepo.saveAndFlush(news);
 
 		// Save relation between category and news (CategoryNews)
 		for (NewsInput.Category nic : input.getCategories()) {
