@@ -9,12 +9,10 @@ import com.claudionogueira.news.dto.CategoryDTO;
 import com.claudionogueira.news.dto.inputs.CategoryInput;
 import com.claudionogueira.news.dto.updates.CategoryUpdate;
 import com.claudionogueira.news.exceptions.DomainException;
-import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.services.interfaces.ICategoryService;
 import com.claudionogueira.news.services.utils.CategoryMapper;
-import com.claudionogueira.news.services.utils.Check;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -23,10 +21,13 @@ public class CategoryService implements ICategoryService {
 
 	private final CategoryRepo categoryRepo;
 
-	public CategoryService(CategoryMapper mapper, CategoryRepo categoryRepo) {
+	private final FindCategory findCategory;
+
+	public CategoryService(CategoryMapper mapper, CategoryRepo categoryRepo, FindCategory findCategory) {
 		super();
 		this.mapper = mapper;
 		this.categoryRepo = categoryRepo;
+		this.findCategory = findCategory;
 	}
 
 	@Transactional(readOnly = true)
@@ -45,16 +46,8 @@ public class CategoryService implements ICategoryService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public Category findById(String id) {
-		long category_id = Check.categoryID(id);
-		return categoryRepo.findById(category_id)
-				.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
-	}
-
-	@Transactional(readOnly = true)
-	@Override
 	public CategoryDTO findByIdDTO(String id) {
-		Category category = this.findById(id);
+		Category category = findCategory.byID(id);
 		return mapper.fromEntityToDTO(category);
 	}
 
@@ -80,7 +73,7 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public void update(String id, CategoryUpdate update) {
-		Category objToBeUpdated = this.findById(id);
+		Category objToBeUpdated = findCategory.byID(id);
 		if (categoryNameIsAvailable(update.getName(), objToBeUpdated)) {
 			objToBeUpdated.setName(update.getName());
 			categoryRepo.save(objToBeUpdated);

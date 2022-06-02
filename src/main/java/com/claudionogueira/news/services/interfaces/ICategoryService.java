@@ -17,8 +17,6 @@ public interface ICategoryService {
 
 	Page<CategoryDTO> findByNamePaginated(String name, Pageable pageable);
 
-	Category findById(String id);
-
 	CategoryDTO findByIdDTO(String id);
 
 	// POST

@@ -11,21 +11,20 @@ import org.springframework.stereotype.Component;
 import com.claudionogueira.news.dto.AuthorDTO;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.AuthorInput;
-import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
-import com.claudionogueira.news.repositories.CategoryRepo;
+import com.claudionogueira.news.services.FindCategory;
 
 @Component
 public class AuthorMapper {
 
 	private final ModelMapper mapper;
-	private final CategoryRepo categoryRepo;
+	private final FindCategory findCategory;
 
-	public AuthorMapper(ModelMapper mapper, CategoryRepo categoryRepo) {
+	public AuthorMapper(ModelMapper mapper, FindCategory findCategory) {
 		super();
 		this.mapper = mapper;
-		this.categoryRepo = categoryRepo;
+		this.findCategory = findCategory;
 	}
 
 	public AuthorDTO fromEntityToDTO(Author entity) {
@@ -35,9 +34,8 @@ public class AuthorMapper {
 			NewsDTO newsDTO = new NewsDTO(null, news.getTitle(), news.getContent(), news.getDate(), null);
 
 			news.getCategories().forEach(categoryNews -> {
-				long category_id = categoryNews.getId().getCategory().getId();
-				Category category = categoryRepo.findById(category_id).orElseThrow(
-						() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
+				String category_id = categoryNews.getId().getCategory().getId().toString();
+				Category category = findCategory.byID(category_id);
 				newsDTO.addCategory(category.getName());
 			});
 
