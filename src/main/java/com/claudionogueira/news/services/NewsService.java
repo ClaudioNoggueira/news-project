@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.claudionogueira.news.dto.NewsDTO;
 import com.claudionogueira.news.dto.inputs.NewsInput;
 import com.claudionogueira.news.dto.updates.NewsUpdate;
-import com.claudionogueira.news.exceptions.ObjectNotFoundException;
 import com.claudionogueira.news.models.Author;
 import com.claudionogueira.news.models.Category;
 import com.claudionogueira.news.models.CategoryNews;
@@ -27,7 +26,6 @@ import com.claudionogueira.news.repositories.CategoryNewsRepo;
 import com.claudionogueira.news.repositories.CategoryRepo;
 import com.claudionogueira.news.repositories.NewsRepo;
 import com.claudionogueira.news.services.interfaces.INewsService;
-import com.claudionogueira.news.services.utils.Check;
 import com.claudionogueira.news.services.utils.NewsMapper;
 
 @Service
@@ -37,17 +35,27 @@ public class NewsService implements INewsService {
 
 	private final NewsRepo newsRepo;
 
+	private final FindNews findNews;
+
+	private final FindAuthor findAuthor;
+
+	private final FindCategory findCategory;
+
 	private final AuthorRepo authorRepo;
 
 	private final CategoryRepo categoryRepo;
 
 	private final CategoryNewsRepo categoryNewsRepo;
 
-	public NewsService(NewsMapper mapper, NewsRepo newsRepo, AuthorRepo authorRepo, CategoryRepo categoryRepo,
+	public NewsService(NewsMapper mapper, NewsRepo newsRepo, FindNews findNews, FindAuthor findAuthor,
+			FindCategory findCategory, AuthorRepo authorRepo, CategoryRepo categoryRepo,
 			CategoryNewsRepo categoryNewsRepo) {
 		super();
 		this.mapper = mapper;
 		this.newsRepo = newsRepo;
+		this.findNews = findNews;
+		this.findAuthor = findAuthor;
+		this.findCategory = findCategory;
 		this.authorRepo = authorRepo;
 		this.categoryRepo = categoryRepo;
 		this.categoryNewsRepo = categoryNewsRepo;
@@ -69,16 +77,8 @@ public class NewsService implements INewsService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public News findById(String id) {
-		long news_id = Check.newsID(id);
-		return newsRepo.findById(news_id)
-				.orElseThrow(() -> new ObjectNotFoundException("News with ID: '" + news_id + "' not found."));
-	}
-
-	@Transactional(readOnly = true)
-	@Override
 	public NewsDTO findByIdDTO(String id) {
-		return mapper.fromEntityToDTO(this.findById(id));
+		return mapper.fromEntityToDTO(findNews.byID(id));
 	}
 
 	@Transactional(readOnly = true)
@@ -117,15 +117,14 @@ public class NewsService implements INewsService {
 	public void add(NewsInput input) {
 
 		// Check if author with the id exists or throw exception
-		long author_id = input.getAuthor().getId();
-		authorRepo.findById(author_id)
-				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+		String author_id = input.getAuthor().getId().toString();
+		findAuthor.byID(author_id);
 
 		// Check if any of the categories exists
 		for (NewsInput.Category nic : input.getCategories()) {
 
 			// If the category doesn't exists, create a new one
-			if (categoryRepo.findByNameIgnoreCase(nic.getName()) == null)
+			if (findCategory.byName(nic.getName()) == null)
 				categoryRepo.save(new Category(null, nic.getName()));
 		}
 
@@ -136,9 +135,7 @@ public class NewsService implements INewsService {
 		for (NewsInput.Category nic : input.getCategories()) {
 
 			// Required categoryID
-			String categoryName = nic.getName();
-			Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
-					() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
+			Category category = findCategory.byName(nic.getName());
 
 			categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, news)));
 		}
@@ -147,24 +144,21 @@ public class NewsService implements INewsService {
 	@Override
 	public void update(String id, NewsUpdate update) {
 		// GET news to be updated by id or throw exception
-		News newsToBeUpdated = this.findById(id);
+		News newsToBeUpdated = findNews.byID(id);
 
 		// Check if categories already exists or save a new one
 		for (NewsUpdate.Category ndc : update.getCategories()) {
+
 			// Required categoryID
-			String categoryName = ndc.getName();
-			Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
-					() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
+			Category category = findCategory.byName(ndc.getName());
 			if (category == null) {
-				category = new Category(null, ndc.getName());
-				categoryRepo.save(category);
+				categoryRepo.save(new Category(null, ndc.getName()));
 			}
 		}
 
 		// GET author by id or throw exception
-		long author_id = Check.authorID(String.valueOf(update.getAuthor().getId()));
-		Author author = authorRepo.findById(author_id)
-				.orElseThrow(() -> new ObjectNotFoundException("Author with ID: '" + author_id + "' not found."));
+		String author_id = update.getAuthor().getId().toString();
+		Author author = findAuthor.byID(author_id);
 		newsToBeUpdated.setAuthor(author);
 
 		if (update.getTitle() != null && !update.getTitle().isEmpty())
@@ -185,9 +179,7 @@ public class NewsService implements INewsService {
 
 			// Save all new categories of news
 			for (NewsUpdate.Category ndc : update.getCategories()) {
-				String categoryName = ndc.getName();
-				Category category = categoryRepo.findByNameIgnoreCase(categoryName).orElseThrow(
-						() -> new ObjectNotFoundException("Category with name: '" + categoryName + "' not found."));
+				Category category = findCategory.byName(ndc.getName());
 				categoryNewsRepo.save(new CategoryNews(new CategoryNewsPK(category, newsToBeUpdated)));
 			}
 		}
@@ -197,7 +189,7 @@ public class NewsService implements INewsService {
 
 	@Override
 	public void delete(String id) {
-		News newsToBeDeleted = this.findById(id);
+		News newsToBeDeleted = findNews.byID(id);
 
 		// DELETE all related rows in TB_CATEGORY_NEWS
 		for (CategoryNews categoryNews : newsToBeDeleted.getCategories()) {

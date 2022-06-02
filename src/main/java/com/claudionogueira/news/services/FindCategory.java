@@ -24,4 +24,9 @@ public class FindCategory {
 		return repo.findById(category_id)
 				.orElseThrow(() -> new ObjectNotFoundException("Category with ID: '" + category_id + "' not found."));
 	}
+
+	public Category byName(String name) {
+		return repo.findByNameIgnoreCase(name)
+				.orElseThrow(() -> new ObjectNotFoundException("Category with name: '" + name + "' not found."));
+	}
 }
